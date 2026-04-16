@@ -8,10 +8,7 @@ interface ResultsCountLabelProps {
 
 export function ResultsCountLabel({ count, query }: ResultsCountLabelProps) {
   return (
-    <Text
-      className="text-[13px] font-medium text-gray-500 dark:text-[#8E8E93] px-4 py-1"
-      accessibilityLiveRegion="polite"
-    >
+    <Text className="text-xs font-medium text-brown-400 px-5 py-2" accessibilityLiveRegion="polite">
       พบ {count} คำ สำหรับ "{query}"
     </Text>
   );

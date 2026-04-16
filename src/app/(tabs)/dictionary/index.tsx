@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, SafeAreaView } from 'react-native';
+import { View, Text, FlatList, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 import { SearchBar } from '../../../components/dictionary/SearchBar';
 import { WordResultCard } from '../../../components/dictionary/WordResultCard';
@@ -10,6 +13,9 @@ import { SearchErrorState } from '../../../components/dictionary/SearchErrorStat
 import { ResultsCountLabel } from '../../../components/dictionary/ResultsCountLabel';
 import { useDebounce } from '../../../hooks/useDebounce';
 import { useWordSearch } from '../../../hooks/useWordSearch';
+import { useBookmarks } from '../../../hooks/useBookmarks';
+import { USE_MOCK } from '../../../services/supabase/words';
+import { MOCK_WORDS } from '../../../services/supabase/mockWords';
 import type { WordEntry } from '../../../types/dictionary';
 
 export default function DictionaryScreen() {
@@ -17,6 +23,7 @@ export default function DictionaryScreen() {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query.trim(), 300);
   const { results, status, errorMsg, isOffline, retry } = useWordSearch(debouncedQuery);
+  const { bookmarkedIds, addBookmark, removeBookmark } = useBookmarks();
 
   function handleClear() {
     setQuery('');
@@ -24,6 +31,14 @@ export default function DictionaryScreen() {
 
   function handleCardPress(id: string) {
     router.push({ pathname: '/dictionary/[wordId]', params: { wordId: id } });
+  }
+
+  function handleBookmarkToggle(entry: WordEntry) {
+    if (bookmarkedIds.has(entry.id)) {
+      removeBookmark(entry.id);
+    } else {
+      addBookmark(entry);
+    }
   }
 
   function renderListEmpty() {
@@ -37,10 +52,35 @@ export default function DictionaryScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F5F5F5] dark:bg-[#1C1C1E]">
+    <SafeAreaView className="flex-1 bg-cream-50">
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <Pressable
+              onPress={() => router.push('/dictionary/saved')}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.7 : 1,
+                width: 44,
+                height: 44,
+                alignItems: 'center',
+                justifyContent: 'center',
+              })}
+              accessibilityLabel="คำที่บันทึกไว้"
+              accessibilityRole="button"
+            >
+              <Ionicons
+                name={bookmarkedIds.size > 0 ? 'bookmark' : 'bookmark-outline'}
+                size={22}
+                color="#C9A84C"
+              />
+            </Pressable>
+          ),
+        }}
+      />
+
       {/* Header + Search bar */}
-      <View className="px-4 pt-3 pb-2 bg-white dark:bg-[#1C1C1E] border-b border-[#E5E7EB] dark:border-[#3A3A3C]">
-        <Text className="text-2xl font-bold text-gray-900 dark:text-white">พจนานุกรมแต้จิ๋ว</Text>
+      <View className="px-5 pb-3 bg-cream-50 border-b border-cream-300">
+        <Text className="text-2xl font-bold text-brown-900">พจนานุกรมแต้จิ๋ว</Text>
         <SearchBar
           value={query}
           onChangeText={setQuery}
@@ -51,10 +91,16 @@ export default function DictionaryScreen() {
 
       {/* Results */}
       <FlatList<WordEntry>
-        data={status === 'success' ? results : []}
+        data={status === 'success' ? results : USE_MOCK && status === 'idle' ? MOCK_WORDS : []}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <WordResultCard entry={item} query={debouncedQuery} onPress={handleCardPress} />
+          <WordResultCard
+            entry={item}
+            query={debouncedQuery}
+            onPress={handleCardPress}
+            isBookmarked={bookmarkedIds.has(item.id)}
+            onBookmarkToggle={handleBookmarkToggle}
+          />
         )}
         ListHeaderComponent={
           status === 'success' && results.length > 0 ? (

@@ -18,17 +18,17 @@ export function SearchBar({
   autoFocus = false,
 }: SearchBarProps) {
   return (
-    <View className="flex-row items-center bg-white dark:bg-[#2C2C2E] border border-gray-200 dark:border-[#3A3A3C] rounded-full px-3 h-11 mt-2">
+    <View className="flex-row items-center bg-cream-200 border border-cream-300 rounded-[10px] px-4 h-[48px] mt-2">
       {isLoading ? (
-        <ActivityIndicator size="small" color="#C84B31" />
+        <ActivityIndicator size="small" color="#C9A84C" />
       ) : (
-        <Ionicons name="search" size={20} color="#9CA3AF" />
+        <Ionicons name="search" size={18} color="#A08060" />
       )}
 
       <TextInput
-        className="flex-1 text-base text-gray-900 dark:text-white ml-2"
+        className="flex-1 text-base text-brown-900 ml-2"
         placeholder="ค้นหา... (ไทย / EN / 中文 / Peng'im)"
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#A08060"
         value={value}
         onChangeText={onChangeText}
         returnKeyType="search"
@@ -49,7 +49,7 @@ export function SearchBar({
           accessibilityLabel="ล้างคำค้นหา"
           accessibilityRole="button"
         >
-          <Ionicons name="close-circle" size={16} color="#9CA3AF" />
+          <Ionicons name="close-circle" size={16} color="#A08060" />
         </TouchableOpacity>
       )}
     </View>

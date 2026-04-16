@@ -1,7 +1,14 @@
 import { supabase } from './client';
 import type { WordEntry } from '../../types/dictionary';
+import { searchMockWords } from './mockWords';
+
+export const USE_MOCK = __DEV__;
 
 export async function searchWords(query: string): Promise<WordEntry[]> {
+  if (USE_MOCK) {
+    return searchMockWords(query);
+  }
+
   const pattern = `%${query}%`;
 
   const { data, error } = await supabase

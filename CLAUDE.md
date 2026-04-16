@@ -36,19 +36,29 @@ npx expo install <package>
 
 - `_layout.tsx` — Root Stack (headerShown: false), imports `global.css` for NativeWind
 - `(tabs)/_layout.tsx` — Tab Navigator with 5 tabs: Dictionary, Learn, Translate, Voice, Culture
-- Each tab has its own `_layout.tsx` (Stack) and `index.tsx` placeholder screen
+- `(tabs)/dictionary/` — Stack with 3 screens: `index` (search), `[wordId]` (detail), `saved` (bookmarks)
+- Other tabs (`learn`, `translate`, `voice`, `culture`) are placeholder screens
 
 **Source layout (`src/`):**
 
 - `app/` — Expo Router screens and layouts
-- `components/` — Shared UI components
-- `hooks/` — Custom React hooks
+- `components/dictionary/` — All dictionary UI components
+- `hooks/` — Custom React hooks (`useWordSearch`, `useBookmarks`, `useDebounce`)
 - `stores/` — Zustand state (not yet wired)
-- `services/` — Supabase and API calls
-- `utils/` — Helper functions
-- `types/` — TypeScript type definitions
+- `services/bookmarks.ts` — AsyncStorage CRUD for bookmarks
+- `services/supabase/` — Supabase client, `words.ts` query functions, `mockWords.ts`
+- `types/dictionary.ts` — `WordEntry`, `WordDetail`, `UsageExample`, `BookmarkItem`
 
-**Styling:** NativeWind v4 (Tailwind for React Native). Use `className` props on RN components. Tailwind config scans `src/**` and `app/**`.
+**Styling:** NativeWind v4 (Tailwind for React Native). Use `className` props on RN components. Custom design tokens are defined in `tailwind.config.js`:
+
+- `cream` (50/100/200/300) — background surfaces
+- `gold` (200/500/700) — accent, pengim text, interactive elements
+- `brown` (400/600/900) — text hierarchy
+- `brick` (200/600/800) — error/warning states
+
+**Mock vs. production data:** `services/supabase/words.ts` exports `USE_MOCK = __DEV__`. In dev, all queries go to `mockWords.ts` (local static data) instead of Supabase. The dictionary index screen also shows `MOCK_WORDS` on idle when `USE_MOCK` is true.
+
+**Bookmarks:** Stored locally via AsyncStorage (`@teochew/bookmarks`). `useBookmarks` hook provides optimistic updates with automatic revert on failure. No server-side persistence yet.
 
 **Backend:** Supabase. Credentials are in `.env.local` (gitignored) as `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY`. Access via `process.env.EXPO_PUBLIC_SUPABASE_URL`. Only `EXPO_PUBLIC_` prefixed vars are bundled into the app.
 

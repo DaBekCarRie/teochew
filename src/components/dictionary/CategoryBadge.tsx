@@ -8,10 +8,10 @@ interface CategoryBadgeProps {
 export function CategoryBadge({ label }: CategoryBadgeProps) {
   return (
     <View
-      className="self-start bg-[#EFF6FF] dark:bg-[#1E3A5F] px-2 py-0.5 rounded-lg"
+      className="self-start bg-gold-200 px-2 py-0.5 rounded-[6px]"
       accessibilityLabel={`หมวดหมู่: ${label}`}
     >
-      <Text className="text-xs font-medium text-[#1D4ED8] dark:text-[#93C5FD]">{label}</Text>
+      <Text className="text-xs font-medium text-gold-700">{label}</Text>
     </View>
   );
 }

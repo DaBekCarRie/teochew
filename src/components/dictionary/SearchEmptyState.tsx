@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 interface SearchEmptyStateProps {
   query: string;
@@ -13,11 +14,11 @@ export function SearchEmptyState({ query }: SearchEmptyStateProps) {
       className="flex-1 items-center justify-center px-8 mt-12"
       accessibilityLiveRegion="polite"
     >
-      <Text className="text-[56px] leading-none mb-4">🔍</Text>
-      <Text className="text-base font-semibold text-gray-900 dark:text-[#F2F2F7] text-center">
+      <Ionicons name="search-outline" size={56} color="#E8D5A3" />
+      <Text className="text-[17px] font-semibold text-brown-900 text-center mt-4">
         ไม่พบคำว่า "{displayQuery}"
       </Text>
-      <Text className="text-sm text-gray-500 dark:text-[#8E8E93] text-center mt-2 max-w-[240px]">
+      <Text className="text-sm text-brown-400 text-center mt-2" style={{ maxWidth: 240 }}>
         ลองค้นหาด้วยภาษาอื่น หรือตรวจสอบการสะกด
       </Text>
     </View>
