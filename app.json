@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "teochew-init",
-    "slug": "teochew-init",
+    "name": "teochew",
+    "slug": "teochew",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,7 +24,17 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
+      "bundler": "metro",
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "scheme": "teochew",
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "root": "src/app"
+        }
+      ]
+    ]
   }
 }
