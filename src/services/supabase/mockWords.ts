@@ -11,6 +11,7 @@ export const MOCK_WORDS: WordEntry[] = [
     mandarin_pinyin: 'shuǐ',
     category: 'ธรรมชาติ',
     verified: true,
+    teochew_audio: null, // replace with a signed URL to test audio locally
   },
   {
     id: 'mock-002',

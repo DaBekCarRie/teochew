@@ -1,20 +1,13 @@
 import { supabase } from './client';
-import type { WordEntry } from '../../types/dictionary';
-import { searchMockWords } from './mockWords';
-
-export const USE_MOCK = __DEV__;
+import type { WordDetail, WordEntry } from '../../types/dictionary';
 
 export async function searchWords(query: string): Promise<WordEntry[]> {
-  if (USE_MOCK) {
-    return searchMockWords(query);
-  }
-
   const pattern = `%${query}%`;
 
   const { data, error } = await supabase
     .from('words')
     .select(
-      'id, teochew_char, teochew_pengim, thai_meaning, english_meaning, mandarin_char, mandarin_pinyin, category, verified',
+      'id, teochew_char, teochew_pengim, thai_meaning, english_meaning, mandarin_char, mandarin_pinyin, category, verified, teochew_audio',
     )
     .or(
       `teochew_char.ilike.${pattern},` +
@@ -29,4 +22,40 @@ export async function searchWords(query: string): Promise<WordEntry[]> {
 
   if (error) throw error;
   return (data as WordEntry[]) ?? [];
+}
+
+export async function getRandomWords(limit = 10): Promise<WordEntry[]> {
+  const { data, error } = await supabase
+    .from('words')
+    .select(
+      'id, teochew_char, teochew_pengim, thai_meaning, english_meaning, mandarin_char, mandarin_pinyin, category, verified, teochew_audio',
+    )
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) return [];
+  return (data as WordEntry[]) ?? [];
+}
+
+export async function getWordDetail(wordId: string): Promise<WordDetail | null> {
+  const { data, error } = await supabase
+    .from('words')
+    .select(
+      `id, teochew_char, teochew_pengim, thai_meaning, english_meaning,
+       mandarin_char, mandarin_pinyin, category, verified, notes, teochew_audio,
+       word_usage_examples (teochew_char, teochew_pengim, thai_meaning, english_meaning, sort_order)`,
+    )
+    .eq('id', wordId)
+    .single();
+
+  console.log('[getWordDetail] raw response', JSON.stringify({ data, error }, null, 2));
+
+  if (error || !data) return null;
+
+  const { word_usage_examples, ...word } = data as any;
+  const usage_examples = (word_usage_examples ?? [])
+    .sort((a: any, b: any) => a.sort_order - b.sort_order)
+    .map(({ sort_order: _, ...ex }: any) => ex);
+
+  return { ...word, usage_examples } as WordDetail;
 }

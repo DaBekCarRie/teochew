@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import NetInfo from '@react-native-community/netinfo';
-import { searchWords, USE_MOCK } from '../services/supabase/words';
+import { searchWords } from '../services/supabase/words';
 import type { WordEntry } from '../types/dictionary';
 
 export type SearchStatus = 'idle' | 'loading' | 'success' | 'empty' | 'error';
@@ -33,17 +33,15 @@ export function useWordSearch(debouncedQuery: string): UseWordSearchResult {
     setErrorMsg(null);
 
     (async () => {
-      if (!USE_MOCK) {
-        const netState = await NetInfo.fetch();
-        if (!netState.isConnected) {
-          if (!cancelledRef.current) {
-            setIsOffline(true);
-            setStatus('error');
-          }
-          return;
+      const netState = await NetInfo.fetch();
+      if (!netState.isConnected) {
+        if (!cancelledRef.current) {
+          setIsOffline(true);
+          setStatus('error');
         }
-        setIsOffline(false);
+        return;
       }
+      setIsOffline(false);
 
       try {
         const data = await searchWords(debouncedQuery.trim());

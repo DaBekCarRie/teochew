@@ -1,13 +1,14 @@
-import React from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
-import { getMockWordDetail } from '../../../services/supabase/mockWords';
+import { getWordDetail } from '../../../services/supabase/words';
 import { useBookmarks } from '../../../hooks/useBookmarks';
 import { BookmarkButton } from '../../../components/dictionary/BookmarkButton';
 import { VerifiedBadge } from '../../../components/dictionary/VerifiedBadge';
+import { FullAudioSection } from '../../../components/audio/FullAudioSection';
 import type { WordDetail, UsageExample } from '../../../types/dictionary';
 
 function SectionLabel({ label }: { label: string }) {
@@ -56,7 +57,30 @@ export default function WordDetailScreen() {
   const router = useRouter();
   const { bookmarkedIds, addBookmark, removeBookmark } = useBookmarks();
 
-  const word: WordDetail | null = getMockWordDetail(wordId ?? '');
+  const [word, setWord] = useState<WordDetail | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    getWordDetail(wordId ?? '').then((result) => {
+      if (!cancelled) {
+        setWord(result);
+        setIsLoading(false);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [wordId]);
+
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1 bg-cream-50 items-center justify-center">
+        <Stack.Screen options={{ title: '', headerShown: true }} />
+        <ActivityIndicator color="#C9A84C" />
+      </SafeAreaView>
+    );
+  }
 
   if (!word) {
     return (
@@ -165,6 +189,7 @@ export default function WordDetailScreen() {
             </>
           )}
         </View>
+        <FullAudioSection audioUrl={word.teochew_audio} wordTeochew={word.teochew_char} />
 
         {/* Notes */}
         {word.notes && (

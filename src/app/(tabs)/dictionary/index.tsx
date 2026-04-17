@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -14,14 +14,18 @@ import { ResultsCountLabel } from '../../../components/dictionary/ResultsCountLa
 import { useDebounce } from '../../../hooks/useDebounce';
 import { useWordSearch } from '../../../hooks/useWordSearch';
 import { useBookmarks } from '../../../hooks/useBookmarks';
-import { USE_MOCK } from '../../../services/supabase/words';
-import { MOCK_WORDS } from '../../../services/supabase/mockWords';
+import { getRandomWords } from '../../../services/supabase/words';
 import type { WordEntry } from '../../../types/dictionary';
 
 export default function DictionaryScreen() {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query.trim(), 300);
+  const [randomWords, setRandomWords] = useState<WordEntry[]>([]);
+
+  useEffect(() => {
+    getRandomWords(10).then(setRandomWords);
+  }, []);
   const { results, status, errorMsg, isOffline, retry } = useWordSearch(debouncedQuery);
   const { bookmarkedIds, addBookmark, removeBookmark } = useBookmarks();
 
@@ -91,7 +95,7 @@ export default function DictionaryScreen() {
 
       {/* Results */}
       <FlatList<WordEntry>
-        data={status === 'success' ? results : USE_MOCK && status === 'idle' ? MOCK_WORDS : []}
+        data={status === 'success' ? results : status === 'idle' ? randomWords : []}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <WordResultCard

@@ -5,6 +5,7 @@ import { HighlightText } from './HighlightText';
 import { CategoryBadge } from './CategoryBadge';
 import { VerifiedBadge } from './VerifiedBadge';
 import { BookmarkButton } from './BookmarkButton';
+import { InlineAudioButton } from '../audio/InlineAudioButton';
 
 interface WordResultCardProps {
   entry: WordEntry;
@@ -49,6 +50,11 @@ export function WordResultCard({
         />
         <View className="flex-row items-center gap-1">
           {entry.verified && <VerifiedBadge />}
+          <InlineAudioButton
+            audioUrl={entry.teochew_audio}
+            wordLabel={entry.teochew_char}
+            size="sm"
+          />
           {onBookmarkToggle && (
             <BookmarkButton
               wordId={entry.id}

@@ -34,7 +34,8 @@
         {
           "root": "src/app"
         }
-      ]
+      ],
+      "expo-audio"
     ]
   }
 }

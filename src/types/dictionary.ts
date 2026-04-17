@@ -8,6 +8,7 @@ export interface WordEntry {
   mandarin_pinyin?: string;
   category?: string;
   verified: boolean;
+  teochew_audio?: string | null;
 }
 
 export interface UsageExample {
