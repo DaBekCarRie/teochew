@@ -61,8 +61,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="culture"
         options={{
-          title: 'วัฒนธรรม',
-          tabBarIcon: tabIcon('globe', 'globe-outline'),
+          title: 'ความก้าวหน้า',
+          tabBarIcon: tabIcon('stats-chart', 'stats-chart-outline'),
         }}
       />
     </Tabs>

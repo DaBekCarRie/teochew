@@ -1,5 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { loadBookmarks, addBookmark, removeBookmark, saveBookmarks } from '../services/bookmarks';
+import {
+  loadBookmarks,
+  addBookmark,
+  removeBookmark,
+  saveBookmarks,
+  removeBookmarks,
+} from '../services/bookmarks';
 import type { BookmarkItem, WordEntry } from '../types/dictionary';
 
 const STORAGE_KEY = '@teochew/bookmarks';
@@ -129,5 +135,24 @@ describe('removeBookmark', () => {
     await removeBookmark('word-001');
     const loaded = await loadBookmarks();
     expect(loaded).toEqual([]);
+  });
+});
+
+describe('removeBookmarks', () => {
+  it('removes multiple bookmarks at once', async () => {
+    const second: BookmarkItem = { ...mockBookmark, id: 'word-002' };
+    const third: BookmarkItem = { ...mockBookmark, id: 'word-003' };
+    await saveBookmarks([mockBookmark, second, third]);
+
+    const result = await removeBookmarks(['word-001', 'word-002']);
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('word-003');
+  });
+
+  it('persists batch removal to storage', async () => {
+    const second: BookmarkItem = { ...mockBookmark, id: 'word-002' };
+    await saveBookmarks([mockBookmark, second]);
+    await removeBookmarks(['word-001', 'word-002']);
+    expect(await loadBookmarks()).toEqual([]);
   });
 });

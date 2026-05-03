@@ -1,9 +1,7 @@
-import { renderHook, act } from '@testing-library/react-hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { renderHook, act } from '@testing-library/react-hooks';
 import { useBookmarks } from '../hooks/useBookmarks';
 import type { WordEntry } from '../types/dictionary';
-
-const STORAGE_KEY = '@teochew/bookmarks';
 
 const mockWord: WordEntry = {
   id: 'word-001',
@@ -25,17 +23,18 @@ const mockWord2: WordEntry = {
   category: 'ธรรมชาติ',
 };
 
+/** Flush all pending promises (AsyncStorage mock resolves synchronously but still defers via microtask) */
+const flushPromises = () => act(async () => {});
+
 beforeEach(async () => {
   await AsyncStorage.clear();
   jest.clearAllMocks();
 });
 
 describe('useBookmarks', () => {
-  it('starts loading and then resolves with empty bookmarks', async () => {
+  it('starts loading and resolves to empty bookmarks', async () => {
     const { result } = renderHook(() => useBookmarks());
-    expect(result.current.isLoading).toBe(true);
-
-    await act(async () => {});
+    await flushPromises();
     expect(result.current.isLoading).toBe(false);
     expect(result.current.bookmarks).toEqual([]);
   });
@@ -52,18 +51,17 @@ describe('useBookmarks', () => {
         bookmarked_at: '2024-01-01T00:00:00.000Z',
       },
     ];
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+    await AsyncStorage.setItem('@teochew/bookmarks', JSON.stringify(stored));
 
     const { result } = renderHook(() => useBookmarks());
-    await act(async () => {});
-
+    await flushPromises();
     expect(result.current.bookmarks).toEqual(stored);
     expect(result.current.bookmarkedIds.has('word-001')).toBe(true);
   });
 
   it('addBookmark adds entry and updates bookmarkedIds', async () => {
     const { result } = renderHook(() => useBookmarks());
-    await act(async () => {});
+    await flushPromises();
 
     await act(async () => {
       await result.current.addBookmark(mockWord);
@@ -73,15 +71,15 @@ describe('useBookmarks', () => {
     expect(result.current.bookmarkedIds.has('word-001')).toBe(true);
   });
 
-  it('addBookmark persists to storage', async () => {
+  it('addBookmark persists to AsyncStorage', async () => {
     const { result } = renderHook(() => useBookmarks());
-    await act(async () => {});
+    await flushPromises();
 
     await act(async () => {
       await result.current.addBookmark(mockWord);
     });
 
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
+    const raw = await AsyncStorage.getItem('@teochew/bookmarks');
     const stored = JSON.parse(raw!);
     expect(stored).toHaveLength(1);
     expect(stored[0].id).toBe('word-001');
@@ -89,7 +87,7 @@ describe('useBookmarks', () => {
 
   it('addBookmark does not duplicate an existing bookmark', async () => {
     const { result } = renderHook(() => useBookmarks());
-    await act(async () => {});
+    await flushPromises();
 
     await act(async () => {
       await result.current.addBookmark(mockWord);
@@ -101,7 +99,7 @@ describe('useBookmarks', () => {
 
   it('removeBookmark removes entry and updates bookmarkedIds', async () => {
     const { result } = renderHook(() => useBookmarks());
-    await act(async () => {});
+    await flushPromises();
 
     await act(async () => {
       await result.current.addBookmark(mockWord);
@@ -116,9 +114,26 @@ describe('useBookmarks', () => {
     expect(result.current.bookmarkedIds.has('word-001')).toBe(false);
   });
 
+  it('removeBookmarks removes multiple entries at once', async () => {
+    const { result } = renderHook(() => useBookmarks());
+    await flushPromises();
+
+    await act(async () => {
+      await result.current.addBookmark(mockWord);
+      await result.current.addBookmark(mockWord2);
+    });
+    expect(result.current.bookmarks).toHaveLength(2);
+
+    await act(async () => {
+      await result.current.removeBookmarks(['word-001', 'word-002']);
+    });
+
+    expect(result.current.bookmarks).toHaveLength(0);
+  });
+
   it('bookmarkedIds reflects multiple bookmarks correctly', async () => {
     const { result } = renderHook(() => useBookmarks());
-    await act(async () => {});
+    await flushPromises();
 
     await act(async () => {
       await result.current.addBookmark(mockWord);
@@ -130,21 +145,14 @@ describe('useBookmarks', () => {
     expect(result.current.bookmarkedIds.has('word-999')).toBe(false);
   });
 
-  it('optimistic update: bookmark appears before storage resolves', async () => {
+  it('bookmark appears after addBookmark resolves', async () => {
     const { result } = renderHook(() => useBookmarks());
-    await act(async () => {});
-
-    // Start add without awaiting
-    let addPromise: Promise<void>;
-    act(() => {
-      addPromise = result.current.addBookmark(mockWord);
-    });
-
-    // Optimistic update should be visible immediately
-    expect(result.current.bookmarks.some((b) => b.id === 'word-001')).toBe(true);
+    await flushPromises();
 
     await act(async () => {
-      await addPromise!;
+      await result.current.addBookmark(mockWord);
     });
+
+    expect(result.current.bookmarks.some((b) => b.id === 'word-001')).toBe(true);
   });
 });

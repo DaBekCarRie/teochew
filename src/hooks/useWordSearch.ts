@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import NetInfo from '@react-native-community/netinfo';
 import { searchWords } from '../services/supabase/words';
+import { searchCachedWords, isCachePopulated } from '../services/offlineCache';
 import type { WordEntry } from '../types/dictionary';
 
 export type SearchStatus = 'idle' | 'loading' | 'success' | 'empty' | 'error';
@@ -13,7 +14,10 @@ interface UseWordSearchResult {
   retry: () => void;
 }
 
-export function useWordSearch(debouncedQuery: string): UseWordSearchResult {
+export function useWordSearch(
+  debouncedQuery: string,
+  category?: string | null,
+): UseWordSearchResult {
   const [results, setResults] = useState<WordEntry[]>([]);
   const [status, setStatus] = useState<SearchStatus>('idle');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -22,7 +26,7 @@ export function useWordSearch(debouncedQuery: string): UseWordSearchResult {
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
-    if (!debouncedQuery || debouncedQuery.trim().length < 2) {
+    if (!debouncedQuery || debouncedQuery.trim().length < 1) {
       setStatus('idle');
       setResults([]);
       return;
@@ -37,14 +41,24 @@ export function useWordSearch(debouncedQuery: string): UseWordSearchResult {
       if (!netState.isConnected) {
         if (!cancelledRef.current) {
           setIsOffline(true);
-          setStatus('error');
+          // Fall back to local cache if available
+          const populated = await isCachePopulated();
+          if (populated) {
+            const cached = await searchCachedWords(debouncedQuery.trim(), category);
+            if (!cancelledRef.current) {
+              setResults(cached);
+              setStatus(cached.length > 0 ? 'success' : 'empty');
+            }
+          } else {
+            setStatus('error');
+          }
         }
         return;
       }
       setIsOffline(false);
 
       try {
-        const data = await searchWords(debouncedQuery.trim());
+        const data = await searchWords(debouncedQuery.trim(), category);
         if (cancelledRef.current) return;
         setResults(data);
         setStatus(data.length > 0 ? 'success' : 'empty');
@@ -58,7 +72,7 @@ export function useWordSearch(debouncedQuery: string): UseWordSearchResult {
     return () => {
       cancelledRef.current = true;
     };
-  }, [debouncedQuery, retryCount]);
+  }, [debouncedQuery, category, retryCount]);
 
   const retry = () => {
     setRetryCount((c) => c + 1);

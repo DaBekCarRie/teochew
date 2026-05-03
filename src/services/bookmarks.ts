@@ -43,3 +43,11 @@ export async function removeBookmark(wordId: string): Promise<BookmarkItem[]> {
   await saveBookmarks(updated);
   return updated;
 }
+
+export async function removeBookmarks(wordIds: string[]): Promise<BookmarkItem[]> {
+  const idSet = new Set(wordIds);
+  const current = await loadBookmarks();
+  const updated = current.filter((b) => !idSet.has(b.id));
+  await saveBookmarks(updated);
+  return updated;
+}

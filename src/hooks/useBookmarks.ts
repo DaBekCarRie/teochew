@@ -3,6 +3,7 @@ import {
   loadBookmarks,
   addBookmark as serviceAdd,
   removeBookmark as serviceRemove,
+  removeBookmarks as serviceRemoveMany,
 } from '../services/bookmarks';
 import type { BookmarkItem, WordEntry } from '../types/dictionary';
 
@@ -14,6 +15,7 @@ interface UseBookmarksResult {
   isLoading: boolean;
   addBookmark: (entry: AddBookmarkInput) => Promise<void>;
   removeBookmark: (wordId: string) => Promise<void>;
+  removeBookmarks: (wordIds: string[]) => Promise<void>;
 }
 
 export function useBookmarks(): UseBookmarksResult {
@@ -21,61 +23,28 @@ export function useBookmarks(): UseBookmarksResult {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const data = await loadBookmarks();
-      if (!cancelled) {
-        setBookmarks(data);
-        setIsLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    loadBookmarks().then((items) => {
+      setBookmarks(items);
+      setIsLoading(false);
+    });
   }, []);
 
   const bookmarkedIds = useMemo(() => new Set(bookmarks.map((b) => b.id)), [bookmarks]);
 
   const addBookmark = useCallback(async (entry: AddBookmarkInput) => {
-    // Optimistic update
-    setBookmarks((prev) => {
-      if (prev.some((b) => b.id === entry.id)) return prev;
-      return [
-        {
-          id: entry.id,
-          teochew_char: entry.teochew_char,
-          teochew_pengim: entry.teochew_pengim,
-          thai_meaning: entry.thai_meaning,
-          english_meaning: entry.english_meaning,
-          category: entry.category,
-          bookmarked_at: new Date().toISOString(),
-        },
-        ...prev,
-      ];
-    });
-    try {
-      const updated = await serviceAdd(entry);
-      setBookmarks(updated);
-    } catch (err) {
-      console.error('useBookmarks: addBookmark failed', err);
-      // Revert on failure
-      setBookmarks((prev) => prev.filter((b) => b.id !== entry.id));
-    }
+    const updated = await serviceAdd(entry);
+    setBookmarks(updated);
   }, []);
 
   const removeBookmark = useCallback(async (wordId: string) => {
-    // Optimistic update
-    setBookmarks((prev) => prev.filter((b) => b.id !== wordId));
-    try {
-      const updated = await serviceRemove(wordId);
-      setBookmarks(updated);
-    } catch (err) {
-      console.error('useBookmarks: removeBookmark failed', err);
-      // Revert — reload from storage to restore state
-      const data = await loadBookmarks();
-      setBookmarks(data);
-    }
+    const updated = await serviceRemove(wordId);
+    setBookmarks(updated);
   }, []);
 
-  return { bookmarks, bookmarkedIds, isLoading, addBookmark, removeBookmark };
+  const removeBookmarks = useCallback(async (wordIds: string[]) => {
+    const updated = await serviceRemoveMany(wordIds);
+    setBookmarks(updated);
+  }, []);
+
+  return { bookmarks, bookmarkedIds, isLoading, addBookmark, removeBookmark, removeBookmarks };
 }
