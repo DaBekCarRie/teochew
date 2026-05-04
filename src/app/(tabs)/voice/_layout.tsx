@@ -1,5 +1,11 @@
 import { Stack } from 'expo-router';
 
 export default function VoiceLayout() {
-  return <Stack screenOptions={{ title: 'Voice' }} />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="result" />
+      <Stack.Screen name="history" />
+    </Stack>
+  );
 }
