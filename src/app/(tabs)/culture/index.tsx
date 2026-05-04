@@ -8,9 +8,11 @@ import { useProgressStore } from '../../../stores/progressStore';
 import { useStreakStore } from '../../../stores/streakStore';
 import { LESSONS } from '../../../services/lessons';
 import { useLessonStore } from '../../../stores/lessonStore';
+import { useXPStore } from '../../../stores/xpStore';
 import { MOCK_WORDS } from '../../../services/supabase/mockWords';
 
 import { OverviewCards } from '../../../components/progress/OverviewCards';
+import { XPBar } from '../../../components/xp/XPBar';
 import { MasteryBreakdown } from '../../../components/progress/MasteryBreakdown';
 import { WeakWordsList } from '../../../components/progress/WeakWordsList';
 import { SyncStatusBar } from '../../../components/progress/SyncStatusBar';
@@ -19,6 +21,7 @@ import { StreakBreakWarning } from '../../../components/streak/StreakBreakWarnin
 import { StreakFreezeConfirmation } from '../../../components/streak/StreakFreezeConfirmation';
 import { MilestoneCelebration } from '../../../components/streak/MilestoneCelebration';
 import { ReminderSettings } from '../../../components/streak/ReminderSettings';
+import { RewardQueue } from '../../../components/xp/RewardQueue';
 
 export default function ProgressScreen() {
   const router = useRouter();
@@ -54,11 +57,13 @@ export default function ProgressScreen() {
   } = useStreakStore();
 
   const { hydrate: hydrateLessons, getProgress } = useLessonStore();
+  const { hydrate: hydrateXP } = useXPStore();
 
   useEffect(() => {
     hydrateProgress();
     hydrateStreak();
     hydrateLessons();
+    hydrateXP();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const lessonIds = LESSONS.map((l) => l.id);
@@ -176,6 +181,22 @@ export default function ProgressScreen() {
           freezeCount={streak.freezeCount}
         />
 
+        <View style={{ marginBottom: 24 }}>
+          <XPBar />
+          <Pressable
+            style={({ pressed }) => ({
+              marginTop: 12,
+              alignSelf: 'center',
+              opacity: pressed ? 0.7 : 1,
+            })}
+            onPress={() => router.push('/culture/badges')}
+          >
+            <Text style={{ fontSize: 14, fontWeight: '600', color: '#B5451B' }}>
+              ดูเหรียญรางวัลทั้งหมด <Ionicons name="arrow-forward" size={12} />
+            </Text>
+          </Pressable>
+        </View>
+
         <OverviewCards
           totalWordsLearned={totalWordsLearned}
           totalWordsMastered={totalWordsMastered}
@@ -224,6 +245,8 @@ export default function ProgressScreen() {
         milestone={pendingMilestone ?? 7}
         onClose={clearMilestone}
       />
+
+      <RewardQueue />
     </SafeAreaView>
   );
 }

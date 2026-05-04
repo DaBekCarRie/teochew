@@ -4,6 +4,8 @@ import Animated from 'react-native-reanimated';
 import { CategoryBadge } from '../dictionary/CategoryBadge';
 import { CardAudioButton } from './CardAudioButton';
 import { SwipeOverlay } from './SwipeOverlay';
+import { CompactToneIndicator } from '../tone/CompactToneIndicator';
+import { parseToneNumbers } from '../../utils/toneParser';
 import type { FlashcardItem } from '../../types/dictionary';
 
 const CARD_HEIGHT = 420;
@@ -69,6 +71,10 @@ export function FlashcardCard({
           {word.teochew_pengim}
         </Text>
 
+        <View className="mt-2">
+          <CompactToneIndicator toneNumbers={parseToneNumbers(word.teochew_pengim)} />
+        </View>
+
         <CardAudioButton audioUrl={word.teochew_audio} size="md" />
 
         <Text className="text-xs text-brown-400 mt-6" style={{ opacity: 0.6 }}>
@@ -92,8 +98,9 @@ export function FlashcardCard({
 
         {/* Teochew recap */}
         <Text className="text-2xl font-bold text-brown-900 text-center">{word.teochew_char}</Text>
-        <View className="flex-row items-center gap-2 mt-1">
+        <View className="flex-row items-center gap-2 mt-1 flex-wrap">
           <Text className="text-base italic text-gold-700">{word.teochew_pengim}</Text>
+          <CompactToneIndicator toneNumbers={parseToneNumbers(word.teochew_pengim)} />
           <CardAudioButton audioUrl={word.teochew_audio} size="sm" />
         </View>
 

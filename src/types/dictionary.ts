@@ -145,3 +145,37 @@ export interface BookmarkItem {
   category?: string;
   bookmarked_at: string; // ISO 8601
 }
+
+// ─── XP & Badge types (S2-8) ──────────────────────────────────────────────────
+
+export type XPSource =
+  | 'flashcard_complete'
+  | 'quiz_complete'
+  | 'quiz_bonus_80'
+  | 'quiz_perfect'
+  | 'lesson_complete'
+  | 'streak_milestone'
+  | 'daily_bonus'
+  | 'first_lesson'
+  | 'word_mastered';
+
+export interface BadgeDef {
+  condition_key: string;
+  name_th: string;
+  name_en: string;
+  description_th: string;
+  icon: string;
+  category: 'learning' | 'quiz' | 'streak' | 'mastery';
+  xp_reward: number;
+  condition_display: string; // human-readable unlock condition
+}
+
+export interface EarnedBadge {
+  condition_key: string;
+  earned_at: string; // ISO 8601
+}
+
+export type RewardNotification =
+  | { type: 'xp'; amount: number; source: XPSource; isBonus: boolean }
+  | { type: 'level_up'; newLevel: number }
+  | { type: 'badge'; conditionKey: string };

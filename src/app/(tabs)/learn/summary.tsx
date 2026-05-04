@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useLessonStore } from '../../../stores/lessonStore';
+import { useXPStore } from '../../../stores/xpStore';
+import { RewardQueue } from '../../../components/xp/RewardQueue';
 
 export default function SummaryScreen() {
   const router = useRouter();
@@ -32,11 +34,20 @@ export default function SummaryScreen() {
   const wordIds = params.wordIds ?? '';
 
   const { setFlashcardDone } = useLessonStore();
+  const { awardXP } = useXPStore();
 
-  // Mark flashcard as done for this lesson
+  // Mark flashcard as done for this lesson and award XP
   useEffect(() => {
     if (lessonId) {
       setFlashcardDone(lessonId);
+      // Give delay to allow DB/state updates before showing modal
+      setTimeout(() => {
+        awardXP('flashcard_complete', { lessonId });
+      }, 500);
+    } else {
+      setTimeout(() => {
+        awardXP('flashcard_complete');
+      }, 500);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -75,6 +86,7 @@ export default function SummaryScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-cream-50">
+      <RewardQueue />
       {/* Header */}
       <View className="h-14 px-5 flex-row items-center justify-between">
         <Text className="text-xl font-semibold text-brown-900">สรุปการฝึก</Text>

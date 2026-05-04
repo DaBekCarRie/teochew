@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useLessonStore } from '../../../stores/lessonStore';
+import { useXPStore } from '../../../stores/xpStore';
+import { RewardQueue } from '../../../components/xp/RewardQueue';
 import { UnlockAnimation } from '../../../components/lesson/UnlockAnimation';
 import { LESSONS } from '../../../services/lessons';
 
@@ -51,10 +53,16 @@ export default function QuizSummaryScreen() {
   const wordIds = params.wordIds ?? '';
 
   const { setQuizScore, isUnlocked } = useLessonStore();
+  const { awardXP } = useXPStore();
   const [unlockVisible, setUnlockVisible] = useState(false);
   const [unlockedTitle, setUnlockedTitle] = useState('');
 
   useEffect(() => {
+    // Delay XP award slightly so it doesn't overlap immediately with page transition
+    setTimeout(() => {
+      awardXP('quiz_complete', { lessonId, quizScore: score });
+    }, 500);
+
     if (!lessonId) return;
     const lessonIds = LESSONS.map((l) => l.id);
     const wasUnlocked = isUnlocked(lessonIds[lessonIds.indexOf(lessonId) + 1] ?? '', lessonIds);
@@ -116,6 +124,7 @@ export default function QuizSummaryScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FAF6EE' }}>
+      <RewardQueue />
       <UnlockAnimation
         visible={unlockVisible}
         unlockedTitle={unlockedTitle}

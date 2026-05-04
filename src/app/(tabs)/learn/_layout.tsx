@@ -9,6 +9,7 @@ export default function LearnLayout() {
       <Stack.Screen name="summary" />
       <Stack.Screen name="quiz" />
       <Stack.Screen name="quiz-summary" />
+      <Stack.Screen name="tones" />
     </Stack>
   );
 }

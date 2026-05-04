@@ -9,6 +9,9 @@ import { useBookmarks } from '../../../hooks/useBookmarks';
 import { BookmarkButton } from '../../../components/dictionary/BookmarkButton';
 import { VerifiedBadge } from '../../../components/dictionary/VerifiedBadge';
 import { FullAudioSection } from '../../../components/audio/FullAudioSection';
+import { CompactToneIndicator } from '../../../components/tone/CompactToneIndicator';
+import { ToneTooltip } from '../../../components/tone/ToneTooltip';
+import { parseToneNumbers } from '../../../utils/toneParser';
 import type { WordDetail, UsageExample } from '../../../types/dictionary';
 
 function SectionLabel({ label }: { label: string }) {
@@ -59,6 +62,7 @@ export default function WordDetailScreen() {
 
   const [word, setWord] = useState<WordDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [tooltipTone, setTooltipTone] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -158,8 +162,25 @@ export default function WordDetailScreen() {
             </View>
           </View>
 
-          {/* Pengim */}
-          <Text className="text-xl italic text-gold-700 mt-1">{word.teochew_pengim}</Text>
+          {/* Pengim + tone badges */}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 8,
+              marginTop: 4,
+            }}
+          >
+            <Text className="text-xl italic text-gold-700">{word.teochew_pengim}</Text>
+            <CompactToneIndicator
+              toneNumbers={parseToneNumbers(word.teochew_pengim)}
+              onPress={() => {
+                const tones = parseToneNumbers(word.teochew_pengim);
+                if (tones.length > 0) setTooltipTone(tones[0]);
+              }}
+            />
+          </View>
 
           <Divider />
 
@@ -214,6 +235,15 @@ export default function WordDetailScreen() {
           </View>
         )}
       </ScrollView>
+
+      {/* Tone tooltip — shown when tone badge is tapped */}
+      {tooltipTone !== null && (
+        <ToneTooltip
+          toneNumber={tooltipTone}
+          visible={tooltipTone !== null}
+          onClose={() => setTooltipTone(null)}
+        />
+      )}
     </SafeAreaView>
   );
 }

@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
+import { Ionicons } from '@expo/vector-icons';
 import { LessonCard } from '../../../components/lesson/LessonCard';
 import { LESSONS } from '../../../services/lessons';
 import { useLessonStore } from '../../../stores/lessonStore';
@@ -54,6 +55,35 @@ export default function LearnScreen() {
         contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
       >
+        {/* Tone diagram entry point */}
+        <Pressable
+          onPress={() => router.push('/learn/tones')}
+          style={({ pressed }) => ({
+            backgroundColor: '#F5EDD8',
+            borderWidth: 1.5,
+            borderColor: '#C9A84C',
+            borderRadius: 14,
+            padding: 14,
+            marginBottom: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+            opacity: pressed ? 0.85 : 1,
+          })}
+          accessibilityRole="button"
+          accessibilityLabel="ระบบเสียงแต้จิ๋ว 8 วรรณยุกต์"
+        >
+          <Ionicons name="musical-notes-outline" size={24} color="#C9A84C" />
+          <View style={{ flex: 1, marginLeft: 12 }}>
+            <Text style={{ fontSize: 15, fontWeight: '700', color: '#2C1A0E' }}>
+              ระบบเสียงแต้จิ๋ว
+            </Text>
+            <Text style={{ fontSize: 13, color: '#A08060', marginTop: 2 }}>
+              8 วรรณยุกต์ พร้อม pitch diagram
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={16} color="#A08060" />
+        </Pressable>
+
         <Text
           style={{
             fontSize: 11,
