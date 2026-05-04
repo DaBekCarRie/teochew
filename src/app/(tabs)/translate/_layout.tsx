@@ -1,5 +1,10 @@
 import { Stack } from 'expo-router';
 
 export default function TranslateLayout() {
-  return <Stack screenOptions={{ title: 'Translate' }} />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="history" />
+    </Stack>
+  );
 }
