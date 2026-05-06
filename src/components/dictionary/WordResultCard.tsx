@@ -7,6 +7,8 @@ import { VerifiedBadge } from './VerifiedBadge';
 import { BookmarkButton } from './BookmarkButton';
 import { InlineAudioButton } from '../audio/InlineAudioButton';
 
+import { useUserStore } from '../../stores/userStore';
+
 interface WordResultCardProps {
   entry: WordEntry;
   query: string;
@@ -22,6 +24,72 @@ export function WordResultCard({
   isBookmarked,
   onBookmarkToggle,
 }: WordResultCardProps) {
+  const { language } = useUserStore();
+
+  const thaiNode = entry.thai_meaning ? (
+    <HighlightText
+      key="th"
+      text={entry.thai_meaning}
+      query={query}
+      textClassName={
+        language === 'th' ? 'text-[15px] text-brown-900' : 'text-sm text-brown-600 mt-0.5'
+      }
+      highlightClassName="bg-gold-200 text-gold-700 font-semibold"
+    />
+  ) : null;
+
+  const enNode = entry.english_meaning ? (
+    <HighlightText
+      key="en"
+      text={entry.english_meaning}
+      query={query}
+      textClassName={
+        language === 'en' ? 'text-[15px] text-brown-900' : 'text-sm text-brown-600 mt-0.5'
+      }
+      highlightClassName="bg-gold-200 text-gold-700 font-semibold"
+    />
+  ) : null;
+
+  const zhNode =
+    entry.mandarin_char || entry.mandarin_pinyin ? (
+      <View
+        key="zh"
+        className={`flex-row items-center gap-2 ${language === 'zh' ? 'mt-0' : 'mt-1.5'}`}
+      >
+        {entry.mandarin_char && (
+          <HighlightText
+            text={entry.mandarin_char}
+            query={query}
+            textClassName={
+              language === 'zh' ? 'text-[15px] text-brown-900' : 'text-sm text-brown-400'
+            }
+            highlightClassName="bg-gold-200 text-gold-700 font-semibold"
+          />
+        )}
+        {entry.mandarin_pinyin && (
+          <HighlightText
+            text={entry.mandarin_pinyin}
+            query={query}
+            textClassName={
+              language === 'zh'
+                ? 'text-[14px] text-brown-700 italic'
+                : 'text-sm text-brown-400 italic'
+            }
+            highlightClassName="bg-gold-200 text-gold-700 font-semibold"
+          />
+        )}
+      </View>
+    ) : null;
+
+  const orderedNodes = [];
+  if (language === 'th') {
+    orderedNodes.push(thaiNode, enNode, zhNode);
+  } else if (language === 'en') {
+    orderedNodes.push(enNode, thaiNode, zhNode);
+  } else {
+    orderedNodes.push(zhNode, thaiNode, enNode);
+  }
+
   return (
     <Pressable
       className="bg-cream-50 border border-cream-300 rounded-[14px] p-4 mb-3 mx-5"
@@ -76,43 +144,8 @@ export function WordResultCard({
       {/* Divider */}
       <View className="border-t border-cream-300 my-2" />
 
-      {/* ROW 3: Thai meaning */}
-      <HighlightText
-        text={entry.thai_meaning}
-        query={query}
-        textClassName="text-[15px] text-brown-900"
-        highlightClassName="bg-gold-200 text-gold-700 font-semibold"
-      />
-
-      {/* ROW 4: English meaning */}
-      <HighlightText
-        text={entry.english_meaning}
-        query={query}
-        textClassName="text-sm text-brown-600 mt-0.5"
-        highlightClassName="bg-gold-200 text-gold-700 font-semibold"
-      />
-
-      {/* ROW 5: Mandarin */}
-      {(entry.mandarin_char || entry.mandarin_pinyin) && (
-        <View className="flex-row items-center gap-2 mt-1.5">
-          {entry.mandarin_char && (
-            <HighlightText
-              text={entry.mandarin_char}
-              query={query}
-              textClassName="text-sm text-brown-400"
-              highlightClassName="bg-gold-200 text-gold-700 font-semibold"
-            />
-          )}
-          {entry.mandarin_pinyin && (
-            <HighlightText
-              text={entry.mandarin_pinyin}
-              query={query}
-              textClassName="text-sm text-brown-400 italic"
-              highlightClassName="bg-gold-200 text-gold-700 font-semibold"
-            />
-          )}
-        </View>
-      )}
+      {/* Meanings */}
+      {orderedNodes}
 
       {/* Category badge */}
       {entry.category && (

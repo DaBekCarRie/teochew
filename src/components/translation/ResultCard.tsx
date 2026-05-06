@@ -6,6 +6,8 @@ import { CopyButton } from './CopyButton';
 import { ShareButton } from './ShareButton';
 import { CorrectionButton } from './CorrectionButton';
 
+import { useUserStore } from '../../stores/userStore';
+
 interface ResultCardProps {
   result: TranslationResult;
   onCopied: () => void;
@@ -33,6 +35,7 @@ function MeaningRow({ flag, text, accessibilityLabel }: MeaningRowProps) {
 export function ResultCard({ result, onCopied, onSubmitCorrection }: ResultCardProps) {
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(16)).current;
+  const { language } = useUserStore();
 
   useEffect(() => {
     Animated.parallel([
@@ -42,6 +45,42 @@ export function ResultCard({ result, onCopied, onSubmitCorrection }: ResultCardP
   }, [opacity, translateY]);
 
   const hasMeanings = result.thai_meaning || result.mandarin_char || result.english_meaning;
+
+  const thaiNode = result.thai_meaning ? (
+    <MeaningRow
+      key="th"
+      flag="🇹🇭"
+      text={result.thai_meaning}
+      accessibilityLabel={`ภาษาไทย: ${result.thai_meaning}`}
+    />
+  ) : null;
+
+  const zhNode = result.mandarin_char ? (
+    <MeaningRow
+      key="zh"
+      flag="🇨🇳"
+      text={result.mandarin_char}
+      accessibilityLabel={`จีนกลาง: ${result.mandarin_char}`}
+    />
+  ) : null;
+
+  const enNode = result.english_meaning ? (
+    <MeaningRow
+      key="en"
+      flag="🇬🇧"
+      text={result.english_meaning}
+      accessibilityLabel={`English: ${result.english_meaning}`}
+    />
+  ) : null;
+
+  const orderedNodes = [];
+  if (language === 'th') {
+    orderedNodes.push(thaiNode, enNode, zhNode);
+  } else if (language === 'en') {
+    orderedNodes.push(enNode, thaiNode, zhNode);
+  } else {
+    orderedNodes.push(zhNode, thaiNode, enNode);
+  }
 
   return (
     <Animated.View
@@ -87,27 +126,7 @@ export function ResultCard({ result, onCopied, onSubmitCorrection }: ResultCardP
       {hasMeanings && (
         <>
           <View style={{ height: 1, backgroundColor: '#D9C9A8', marginBottom: 8 }} />
-          {result.thai_meaning && (
-            <MeaningRow
-              flag="🇹🇭"
-              text={result.thai_meaning}
-              accessibilityLabel={`ภาษาไทย: ${result.thai_meaning}`}
-            />
-          )}
-          {result.mandarin_char && (
-            <MeaningRow
-              flag="🇨🇳"
-              text={result.mandarin_char}
-              accessibilityLabel={`จีนกลาง: ${result.mandarin_char}`}
-            />
-          )}
-          {result.english_meaning && (
-            <MeaningRow
-              flag="🇬🇧"
-              text={result.english_meaning}
-              accessibilityLabel={`English: ${result.english_meaning}`}
-            />
-          )}
+          {orderedNodes}
         </>
       )}
 

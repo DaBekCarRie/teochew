@@ -1,8 +1,9 @@
 import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import type { AudioPlayer, AudioStatus as ExpoAudioStatus } from 'expo-audio';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { usePlaybackSpeed } from './usePlaybackSpeed';
 
-export type PlaybackRate = 0.75 | 1.0;
+export type PlaybackRate = number;
 export type AudioStatus = 'idle' | 'loading' | 'playing' | 'paused' | 'finished' | 'error';
 
 export interface AudioError {
@@ -40,22 +41,24 @@ function pauseGlobal() {
 }
 
 export function useAudio(audioUrl: string | null | undefined): UseAudioReturn {
+  const globalPlaybackSpeed = usePlaybackSpeed();
   const [status, setStatus] = useState<AudioStatus>('idle');
-  const [currentRate, setCurrentRate] = useState<PlaybackRate>(1.0);
+  const [currentRate, setCurrentRate] = useState<PlaybackRate>(globalPlaybackSpeed);
   const [error, setError] = useState<AudioError | null>(null);
   const [positionMs, setPositionMs] = useState(0);
   const [durationMs, setDurationMs] = useState(0);
 
   const playerRef = useRef<AudioPlayer | null>(null);
-  const rateRef = useRef<PlaybackRate>(1.0);
+  const rateRef = useRef<PlaybackRate>(globalPlaybackSpeed);
   const replayDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const audioModeSetRef = useRef(false);
   const unmountedRef = useRef(false);
 
-  // Keep rateRef in sync
+  // Sync global playback speed when it changes, and user isn't locally toggling slow mode
   useEffect(() => {
-    rateRef.current = currentRate;
-  }, [currentRate]);
+    setCurrentRate(globalPlaybackSpeed);
+    rateRef.current = globalPlaybackSpeed;
+  }, [globalPlaybackSpeed]);
 
   const destroyPlayer = useCallback(() => {
     const p = playerRef.current;
@@ -209,13 +212,16 @@ export function useAudio(audioUrl: string | null | undefined): UseAudioReturn {
   }, [loadAndPlay]);
 
   const toggleSlowMode = useCallback(() => {
-    const nextRate: PlaybackRate = rateRef.current === 1.0 ? 0.75 : 1.0;
+    // If it's already at normal speed or higher, toggle to 0.75
+    // Otherwise toggle back to global default speed
+    const nextRate: PlaybackRate =
+      rateRef.current === globalPlaybackSpeed ? 0.75 : globalPlaybackSpeed;
     setCurrentRate(nextRate);
     rateRef.current = nextRate;
     if (playerRef.current) {
       playerRef.current.setPlaybackRate(nextRate, 'high');
     }
-  }, []);
+  }, [globalPlaybackSpeed]);
 
   const stop = useCallback(() => {
     destroyPlayer();

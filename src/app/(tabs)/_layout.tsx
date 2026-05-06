@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../utils/theme';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -10,15 +11,17 @@ function tabIcon(active: IoniconName, inactive: IoniconName) {
 }
 
 export default function TabLayout() {
+  const { colors } = useTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#C9A84C',
-        tabBarInactiveTintColor: '#A08060',
+        tabBarActiveTintColor: colors.gold,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: {
-          backgroundColor: '#FAF6EE',
-          borderTopColor: '#D9C9A8',
+          backgroundColor: colors.tabBar,
+          borderTopColor: colors.tabBorder,
           borderTopWidth: 1,
         },
         tabBarLabelStyle: {
@@ -52,17 +55,25 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="voice"
+        name="culture"
         options={{
-          title: 'เสียง',
-          tabBarIcon: tabIcon('mic', 'mic-outline'),
+          title: 'วัฒนธรรม',
+          tabBarIcon: tabIcon('compass', 'compass-outline'),
         }}
       />
       <Tabs.Screen
-        name="culture"
+        name="profile"
         options={{
-          title: 'ความก้าวหน้า',
-          tabBarIcon: tabIcon('stats-chart', 'stats-chart-outline'),
+          title: 'โปรไฟล์',
+          tabBarIcon: tabIcon('person', 'person-outline'),
+        }}
+      />
+
+      {/* Hidden tabs that we still want to route to but not show in the bottom bar */}
+      <Tabs.Screen
+        name="voice"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

@@ -8,6 +8,8 @@ import type { BookmarkItem } from '../../types/dictionary';
 import { CategoryBadge } from './CategoryBadge';
 import { BookmarkButton } from './BookmarkButton';
 
+import { useUserStore } from '../../stores/userStore';
+
 interface SavedWordCardProps {
   item: BookmarkItem;
   isEditMode?: boolean;
@@ -40,10 +42,40 @@ export function SavedWordCard({
   onRemove,
 }: SavedWordCardProps) {
   const swipeableRef = useRef<SwipeableMethods>(null);
+  const { language } = useUserStore();
 
   function handleRemove() {
     swipeableRef.current?.close();
     onRemove(item.id);
+  }
+
+  const thaiNode = item.thai_meaning ? (
+    <Text
+      key="th"
+      className={language === 'th' ? 'text-[15px] text-brown-900' : 'text-sm text-brown-600 mt-0.5'}
+    >
+      {item.thai_meaning}
+    </Text>
+  ) : null;
+
+  const enNode = item.english_meaning ? (
+    <Text
+      key="en"
+      className={language === 'en' ? 'text-[15px] text-brown-900' : 'text-sm text-brown-600 mt-0.5'}
+    >
+      {item.english_meaning}
+    </Text>
+  ) : null;
+
+  // We add a dummy ZH node for bookmarks since BookmarkItem only has thai and english.
+  // We can just leave it out for now, or display something if it had mandarin in the BookmarkItem type.
+
+  const orderedNodes = [];
+  if (language === 'th') {
+    orderedNodes.push(thaiNode, enNode);
+  } else {
+    // English or ZH (but we don't have ZH in BookmarkItem)
+    orderedNodes.push(enNode, thaiNode);
   }
 
   const cardContent = (
@@ -92,11 +124,8 @@ export function SavedWordCard({
       {/* Divider */}
       <View className="border-t border-cream-300 my-2" />
 
-      {/* ROW 3: Thai meaning */}
-      <Text className="text-[15px] text-brown-900">{item.thai_meaning}</Text>
-
-      {/* ROW 4: English meaning */}
-      <Text className="text-sm text-brown-600 mt-0.5">{item.english_meaning}</Text>
+      {/* Meanings */}
+      {orderedNodes}
 
       {/* Category badge */}
       {item.category && (
