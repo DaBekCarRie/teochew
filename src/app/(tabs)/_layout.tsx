@@ -64,6 +64,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
+          href: null,
           title: 'โปรไฟล์',
           tabBarIcon: tabIcon('person', 'person-outline'),
         }}
