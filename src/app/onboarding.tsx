@@ -18,14 +18,17 @@ import { Slide1Welcome } from '../components/onboarding/Slide1Welcome';
 import { Slide2Features } from '../components/onboarding/Slide2Features';
 import { Slide3Language } from '../components/onboarding/Slide3Language';
 import { useUserStore } from '../stores/userStore';
+import type { LearningIntent } from '../stores/userStore';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const TOTAL_SLIDES = 4;
 
 export default function OnboardingScreen() {
   const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedLang, setSelectedLang] = useState<'th' | 'zh' | 'en'>('th');
-  const { setLanguage } = useUserStore();
+  const [selectedIntent, setSelectedIntent] = useState<LearningIntent>('general');
+  const { setLanguage, setLearningIntent } = useUserStore();
 
   const translateX = useSharedValue(0);
   const opacity = useSharedValue(1);
@@ -36,14 +39,15 @@ export default function OnboardingScreen() {
     router.replace('/dictionary');
   }
 
-  async function handleStart() {
+  async function handleStart(intentOverride?: LearningIntent) {
     await AsyncStorage.setItem('@teochew_onboarding_completed', 'true');
     await setLanguage(selectedLang);
+    await setLearningIntent(intentOverride ?? selectedIntent);
     router.replace('/dictionary');
   }
 
   function handleNext() {
-    if (currentSlide < 2) {
+    if (currentSlide < TOTAL_SLIDES - 1) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
       // Animate out
@@ -68,7 +72,7 @@ export default function OnboardingScreen() {
   }
 
   const panGesture = Gesture.Pan().onEnd((e) => {
-    if (e.translationX < -50 && currentSlide < 2) {
+    if (e.translationX < -50 && currentSlide < TOTAL_SLIDES - 1) {
       runOnJS(handleNext)();
     } else if (e.translationX > 50 && currentSlide > 0) {
       runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
@@ -95,7 +99,7 @@ export default function OnboardingScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FAF6EE' }}>
-      {currentSlide < 2 && (
+      {currentSlide < TOTAL_SLIDES - 1 && (
         <Pressable
           style={{ position: 'absolute', top: 50, right: 20, zIndex: 10, padding: 8 }}
           onPress={handleSkip}
@@ -112,18 +116,25 @@ export default function OnboardingScreen() {
           {currentSlide === 2 && (
             <Slide3Language selectedLang={selectedLang} onSelect={setSelectedLang} />
           )}
+          {currentSlide === 3 && (
+            <Slide4Intent
+              selectedIntent={selectedIntent}
+              onSelect={setSelectedIntent}
+              onSkip={() => handleStart('general')}
+            />
+          )}
         </Animated.View>
       </GestureDetector>
 
       <View style={{ paddingHorizontal: 24, paddingBottom: 32 }}>
         {/* Page Indicator */}
         <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 24 }}>
-          {[0, 1, 2].map((i) => (
+          {Array.from({ length: TOTAL_SLIDES }, (_, i) => i).map((i) => (
             <PageDot key={i} active={currentSlide === i} />
           ))}
         </View>
 
-        {currentSlide < 2 ? (
+        {currentSlide < TOTAL_SLIDES - 1 ? (
           <Pressable
             onPress={handleNext}
             style={({ pressed }) => ({
@@ -156,6 +167,116 @@ export default function OnboardingScreen() {
         )}
       </View>
     </SafeAreaView>
+  );
+}
+
+const INTENT_OPTIONS: { value: LearningIntent; emoji: string; label: string; sublabel: string }[] =
+  [
+    { value: 'grandparent', emoji: '👴👵', label: 'ปู่ย่าตายาย', sublabel: 'Grandparent' },
+    { value: 'parent', emoji: '👨‍👩‍👦', label: 'พ่อแม่', sublabel: 'Parent' },
+    { value: 'relative', emoji: '👥', label: 'ญาติ', sublabel: 'Relative' },
+    { value: 'general', emoji: '🌐', label: 'ทั่วไป', sublabel: 'General' },
+  ];
+
+function Slide4Intent({
+  selectedIntent,
+  onSelect,
+  onSkip,
+}: {
+  selectedIntent: LearningIntent;
+  onSelect: (intent: LearningIntent) => void;
+  onSkip: () => void;
+}) {
+  return (
+    <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 48 }}>
+      <Text
+        style={{
+          fontSize: 28,
+          fontWeight: '700',
+          color: '#3D2010',
+          marginBottom: 8,
+          fontFamily: 'Sarabun',
+        }}
+      >
+        อยากคุยกับใคร?
+      </Text>
+      <Text
+        style={{
+          fontSize: 16,
+          color: '#7A5C3A',
+          marginBottom: 32,
+          fontFamily: 'Sarabun',
+        }}
+      >
+        เลือกเป้าหมายการเรียนรู้ของคุณ
+      </Text>
+
+      <View style={{ gap: 12 }}>
+        {INTENT_OPTIONS.map((opt) => {
+          const selected = selectedIntent === opt.value;
+          return (
+            <Pressable
+              key={opt.value}
+              onPress={() => onSelect(opt.value)}
+              style={({ pressed }) => ({
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 16,
+                padding: 16,
+                borderRadius: 14,
+                borderWidth: 2,
+                borderColor: selected ? '#B5451B' : '#E8D9BC',
+                backgroundColor: selected ? '#FDF0E8' : '#FEFAF5',
+                opacity: pressed ? 0.85 : 1,
+              })}
+              accessibilityRole="radio"
+              accessibilityState={{ checked: selected }}
+            >
+              <Text style={{ fontSize: 32 }}>{opt.emoji}</Text>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    fontSize: 17,
+                    fontWeight: '600',
+                    color: selected ? '#B5451B' : '#3D2010',
+                    fontFamily: 'Sarabun',
+                  }}
+                >
+                  {opt.label}
+                </Text>
+                <Text style={{ fontSize: 13, color: '#A08060', fontFamily: 'Sarabun' }}>
+                  {opt.sublabel}
+                </Text>
+              </View>
+              {selected && (
+                <View
+                  style={{
+                    width: 22,
+                    height: 22,
+                    borderRadius: 11,
+                    backgroundColor: '#B5451B',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text style={{ color: '#FEFAF5', fontSize: 13, fontWeight: '700' }}>✓</Text>
+                </View>
+              )}
+            </Pressable>
+          );
+        })}
+      </View>
+
+      <Pressable
+        onPress={onSkip}
+        style={{ marginTop: 24, alignSelf: 'center', padding: 8 }}
+        accessibilityLabel="ข้ามขั้นตอนนี้"
+      >
+        <Text style={{ fontSize: 14, color: '#A08060', fontFamily: 'Sarabun' }}>
+          ข้ามขั้นตอนนี้
+        </Text>
+      </Pressable>
+    </View>
   );
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Pressable, ActivityIndicator } from 'react-native';
+import { Text, Pressable, ActivityIndicator, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 interface TranslateButtonProps {
@@ -14,35 +14,46 @@ export function TranslateButton({ onPress, disabled, isLoading }: TranslateButto
     onPress();
   }
 
+  const isDisabled = disabled || isLoading;
+
   return (
     <Pressable
       onPress={handlePress}
-      disabled={disabled || isLoading}
+      disabled={isDisabled}
       style={({ pressed }) => ({
-        marginTop: 12,
+        marginTop: 14,
         width: '100%',
-        height: 52,
-        borderRadius: 12,
+        height: 56,
+        borderRadius: 14,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: disabled || isLoading ? '#EDE0C4' : '#B5451B',
-        opacity: pressed ? 0.85 : 1,
+        backgroundColor: isDisabled ? '#EDE0C4' : '#B5451B',
+        opacity: pressed ? 0.87 : 1,
+        shadowColor: '#B5451B',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: isDisabled ? 0 : 0.28,
+        shadowRadius: 10,
+        elevation: isDisabled ? 0 : 3,
       })}
       accessibilityLabel="แปลภาษา"
       accessibilityRole="button"
-      accessibilityState={{ disabled: disabled || isLoading }}
+      accessibilityState={{ disabled: isDisabled }}
     >
       {isLoading ? (
-        <ActivityIndicator size="small" color="#FAF6EE" />
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <ActivityIndicator size="small" color="#FAF6EE" />
+          <Text style={{ fontSize: 14, color: '#FAF6EE', fontWeight: '500' }}>กำลังแปล...</Text>
+        </View>
       ) : (
         <Text
           style={{
             fontSize: 16,
-            fontWeight: '600',
-            color: disabled ? '#A08060' : '#FAF6EE',
+            fontWeight: '700',
+            color: isDisabled ? '#A08060' : '#FAF6EE',
+            letterSpacing: 0.3,
           }}
         >
-          แปล →
+          {disabled ? 'แปล' : 'แปลเป็นแต้จิ๋ว →'}
         </Text>
       )}
     </Pressable>

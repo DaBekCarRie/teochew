@@ -4,7 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
-import { LESSONS, getLessonWords } from '../../../../services/lessons';
+import {
+  FAMILY_LESSON,
+  LESSONS,
+  getFamilyPhraseWords,
+  getLessonWords,
+} from '../../../../services/lessons';
 import { useLessonStore } from '../../../../stores/lessonStore';
 
 const CARD_SHADOW = {
@@ -20,10 +25,16 @@ export default function LessonIntroScreen() {
   const { lessonId } = useLocalSearchParams<{ lessonId: string }>();
   const { getProgress } = useLessonStore();
 
-  const lesson = LESSONS.find((l) => l.id === lessonId);
+  const lesson =
+    LESSONS.find((l) => l.id === lessonId) ??
+    (lessonId === FAMILY_LESSON.id ? FAMILY_LESSON : undefined);
 
   // Always call hooks before any early return
-  const words = useMemo(() => (lesson ? getLessonWords(lesson) : []), [lesson]);
+  const words = useMemo(() => {
+    if (!lesson) return [];
+    if (lesson.id === FAMILY_LESSON.id) return getFamilyPhraseWords();
+    return getLessonWords(lesson);
+  }, [lesson]);
   const progress = getProgress(lessonId ?? '');
   const score = progress.quizBestScore;
   const isCompleted = (score ?? -1) >= 60;

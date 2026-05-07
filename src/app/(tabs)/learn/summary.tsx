@@ -36,14 +36,15 @@ export default function SummaryScreen() {
   const { setFlashcardDone } = useLessonStore();
   const { awardXP } = useXPStore();
 
-  // Mark flashcard as done for this lesson and award XP
+  // Mark flashcard as done for this lesson and award XP (not for family lesson)
   useEffect(() => {
     if (lessonId) {
       setFlashcardDone(lessonId);
-      // Give delay to allow DB/state updates before showing modal
-      setTimeout(() => {
-        awardXP('flashcard_complete', { lessonId });
-      }, 500);
+      if (lessonId !== 'lesson-family-phrases') {
+        setTimeout(() => {
+          awardXP('flashcard_complete', { lessonId });
+        }, 500);
+      }
     } else {
       setTimeout(() => {
         awardXP('flashcard_complete');

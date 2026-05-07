@@ -21,10 +21,13 @@ interface FeedbackModalProps {
 const RATING_LABELS = ['', 'แย่มาก', 'แย่', 'พอใช้', 'ดี', 'ดีมาก'];
 const CATEGORIES = ['แอปโดยรวม', 'พจนานุกรม', 'การเรียนรู้', 'การแปล', 'การถอดเสียง', 'อื่นๆ'];
 
+type GrandparentStatus = 'yes' | 'no' | 'none' | null;
+
 export function FeedbackModal({ visible, onClose }: FeedbackModalProps) {
   const [rating, setRating] = useState(0);
   const [category, setCategory] = useState('แอปโดยรวม');
   const [message, setMessage] = useState('');
+  const [grandparentStatus, setGrandparentStatus] = useState<GrandparentStatus>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -32,6 +35,7 @@ export function FeedbackModal({ visible, onClose }: FeedbackModalProps) {
     setRating(0);
     setCategory('แอปโดยรวม');
     setMessage('');
+    setGrandparentStatus(null);
     setSubmitted(false);
     setSubmitting(false);
   }
@@ -47,6 +51,7 @@ export function FeedbackModal({ visible, onClose }: FeedbackModalProps) {
     setSubmitting(true);
     try {
       // In prod: POST to Supabase feedback table or API endpoint
+      // payload includes: { rating, category, message, grandparent_status: grandparentStatus }
       await new Promise((r) => setTimeout(r, 800));
       setSubmitted(true);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -215,6 +220,64 @@ export function FeedbackModal({ visible, onClose }: FeedbackModalProps) {
                         </Pressable>
                       ))}
                     </View>
+
+                    {/* Grandparent status */}
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: '600',
+                        color: '#6B4C2A',
+                        marginBottom: 10,
+                      }}
+                    >
+                      คุณมีปู่ย่าตายายที่พูดภาษาแต้จิ๋วอยู่ไหม?
+                    </Text>
+                    {(
+                      [
+                        { value: 'yes', label: 'ใช่' },
+                        { value: 'no', label: 'ไม่แล้ว' },
+                        { value: 'none', label: 'ไม่มีปู่ย่าที่พูดแต้จิ๋ว' },
+                      ] as { value: GrandparentStatus; label: string }[]
+                    ).map(({ value, label }) => (
+                      <Pressable
+                        key={value}
+                        onPress={() => {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                          setGrandparentStatus(value);
+                        }}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: 10,
+                          paddingVertical: 8,
+                        }}
+                      >
+                        <View
+                          style={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: 10,
+                            borderWidth: 2,
+                            borderColor: grandparentStatus === value ? '#B5451B' : '#D9C9A8',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          {grandparentStatus === value && (
+                            <View
+                              style={{
+                                width: 10,
+                                height: 10,
+                                borderRadius: 5,
+                                backgroundColor: '#B5451B',
+                              }}
+                            />
+                          )}
+                        </View>
+                        <Text style={{ fontSize: 14, color: '#2C1A0E' }}>{label}</Text>
+                      </Pressable>
+                    ))}
+                    <View style={{ marginBottom: 20 }} />
 
                     {/* Message */}
                     <Text

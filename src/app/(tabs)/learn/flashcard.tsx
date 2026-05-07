@@ -17,6 +17,7 @@ import { useFlashcardDeck } from '../../../hooks/useFlashcardDeck';
 import { useCardFlip } from '../../../hooks/useCardFlip';
 import { useFlashcardGesture } from '../../../hooks/useFlashcardGesture';
 import { MOCK_WORDS } from '../../../services/supabase/mockWords';
+import { FAMILY_PHRASE_WORDS } from '../../../services/lessons';
 import { useProgressStore } from '../../../stores/progressStore';
 
 export default function FlashcardScreen() {
@@ -107,13 +108,14 @@ export default function FlashcardScreen() {
       onSwipeComplete: handleSwipeComplete,
     });
 
-  // Load deck on mount — lesson/retry flows filter MOCK_WORDS by ID param
+  // Load deck on mount — lesson/retry flows filter word lists by ID param
   useEffect(() => {
     const idStr = wordIdsParam || unknownWordIdsParam;
     if (idStr) {
       const ids = idStr.split(',').filter(Boolean);
+      const allWords = [...MOCK_WORDS, ...FAMILY_PHRASE_WORDS];
       const filtered = ids
-        .map((id) => MOCK_WORDS.find((w) => w.id === id))
+        .map((id) => allWords.find((w) => w.id === id))
         .filter(Boolean) as typeof MOCK_WORDS;
       loadDeck(null, filtered);
     } else {

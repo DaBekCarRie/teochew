@@ -22,6 +22,7 @@ import { SkeletonQuestion } from '../../../components/quiz/SkeletonQuestion';
 
 import { useQuizSession } from '../../../hooks/useQuizSession';
 import { getFlashcardWords } from '../../../services/supabase/words';
+import { getFamilyPhraseWords } from '../../../services/lessons';
 import { useProgressStore } from '../../../stores/progressStore';
 
 export default function QuizScreen() {
@@ -67,9 +68,15 @@ export default function QuizScreen() {
   useEffect(() => {
     async function load() {
       try {
-        const words = await getFlashcardWords(category && !wordIds ? category : null, 50);
-        // If wordIds supplied (retry flow), filter to those words
-        const filtered = wordIds ? words.filter((w) => wordIds.includes(w.id)) : words;
+        const isFamilyLesson = wordIds && wordIds.some((id) => id.startsWith('family-'));
+        let filtered;
+        if (isFamilyLesson) {
+          const familyWords = getFamilyPhraseWords();
+          filtered = wordIds ? familyWords.filter((w) => wordIds.includes(w.id)) : familyWords;
+        } else {
+          const words = await getFlashcardWords(category && !wordIds ? category : null, 50);
+          filtered = wordIds ? words.filter((w) => wordIds.includes(w.id)) : words;
+        }
         initQuiz(filtered);
       } catch {
         initQuiz([]);

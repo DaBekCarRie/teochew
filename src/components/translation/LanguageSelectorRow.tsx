@@ -34,76 +34,111 @@ export function LanguageSelectorRow({ selectedLang, onSelectLang }: LanguageSele
   const spin = rotate.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '180deg'] });
 
   return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginTop: 16,
-        marginBottom: 12,
-      }}
-    >
-      {/* Language dropdown */}
-      <Pressable
-        onPress={() => setOpen(true)}
-        style={({ pressed }) => ({
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 8,
-          backgroundColor: '#F5EDD8',
-          borderWidth: 1,
-          borderColor: '#D9C9A8',
-          borderRadius: 10,
-          paddingHorizontal: 14,
-          paddingVertical: 10,
-          minHeight: 44,
-          opacity: pressed ? 0.8 : 1,
-        })}
-        accessibilityLabel={`ภาษา input: ${current.label}`}
-        accessibilityRole="button"
-      >
-        <Text style={{ fontSize: 18 }}>{current.flag}</Text>
-        <Text style={{ fontSize: 14, fontWeight: '500', color: '#2C1A0E' }}>{current.label}</Text>
-        <Ionicons name="chevron-down" size={14} color="#A08060" />
-      </Pressable>
+    <>
+      <View style={{ marginTop: 20, marginBottom: 14 }}>
+        {/* Column labels */}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 7,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 10,
+              fontWeight: '700',
+              color: '#A08060',
+              letterSpacing: 1.5,
+              marginLeft: 4,
+            }}
+          >
+            จาก
+          </Text>
+          <View style={{ width: 60 }} />
+          <Text
+            style={{
+              fontSize: 10,
+              fontWeight: '700',
+              color: '#9A7A2E',
+              letterSpacing: 1.5,
+              marginRight: 4,
+            }}
+          >
+            เป็น
+          </Text>
+        </View>
 
-      {/* Swap button */}
-      <Pressable
-        onPress={handleSwap}
-        style={({ pressed }) => ({
-          width: 44,
-          height: 44,
-          borderRadius: 22,
-          backgroundColor: '#EDE0C4',
-          alignItems: 'center',
-          justifyContent: 'center',
-          opacity: pressed ? 0.8 : 1,
-        })}
-        accessibilityLabel="เปลี่ยนภาษา input"
-        accessibilityRole="button"
-      >
-        <Animated.View style={{ transform: [{ rotate: spin }] }}>
-          <Ionicons name="swap-horizontal" size={20} color="#C9A84C" />
-        </Animated.View>
-      </Pressable>
+        {/* Selector row */}
+        <View
+          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+        >
+          {/* Source dropdown */}
+          <Pressable
+            onPress={() => setOpen(true)}
+            style={({ pressed }) => ({
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+              backgroundColor: '#F5EDD8',
+              borderWidth: 1,
+              borderColor: '#D9C9A8',
+              borderRadius: 12,
+              paddingHorizontal: 14,
+              paddingVertical: 12,
+              opacity: pressed ? 0.8 : 1,
+            })}
+            accessibilityLabel={`ภาษา input: ${current.label}`}
+            accessibilityRole="button"
+          >
+            <Text style={{ fontSize: 18 }}>{current.flag}</Text>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: '#2C1A0E', flex: 1 }}>
+              {current.label}
+            </Text>
+            <Ionicons name="chevron-down" size={13} color="#A08060" />
+          </Pressable>
 
-      {/* Fixed output label */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 8,
-          backgroundColor: '#E8D5A3',
-          borderWidth: 1,
-          borderColor: '#C9A84C',
-          borderRadius: 10,
-          paddingHorizontal: 14,
-          paddingVertical: 10,
-          minHeight: 44,
-        }}
-      >
-        <Text style={{ fontSize: 18 }}>🎮</Text>
-        <Text style={{ fontSize: 14, fontWeight: '500', color: '#9A7A2E' }}>แต้จิ๋ว</Text>
+          {/* Cycle button */}
+          <Pressable
+            onPress={handleSwap}
+            style={({ pressed }) => ({
+              width: 44,
+              height: 44,
+              marginHorizontal: 8,
+              borderRadius: 22,
+              backgroundColor: pressed ? '#D9C9A8' : '#EDE0C4',
+              alignItems: 'center',
+              justifyContent: 'center',
+            })}
+            accessibilityLabel="เปลี่ยนภาษา input"
+            accessibilityRole="button"
+          >
+            <Animated.View style={{ transform: [{ rotate: spin }] }}>
+              <Ionicons name="swap-horizontal" size={18} color="#C9A84C" />
+            </Animated.View>
+          </Pressable>
+
+          {/* Fixed Teochew output */}
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+              backgroundColor: '#EDE0C4',
+              borderWidth: 1.5,
+              borderColor: '#C9A84C',
+              borderRadius: 12,
+              paddingHorizontal: 14,
+              paddingVertical: 12,
+            }}
+          >
+            <Text style={{ fontSize: 16, fontWeight: '700', color: '#9A7A2E' }}>潮</Text>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: '#9A7A2E' }}>แต้จิ๋ว</Text>
+          </View>
+        </View>
       </View>
 
       {/* Language picker modal */}
@@ -111,26 +146,29 @@ export function LanguageSelectorRow({ selectedLang, onSelectLang }: LanguageSele
         <Pressable
           style={{
             flex: 1,
-            backgroundColor: 'rgba(44,26,14,0.35)',
+            backgroundColor: 'rgba(44,26,14,0.4)',
             justifyContent: 'center',
             alignItems: 'center',
           }}
           onPress={() => setOpen(false)}
         >
           <View
-            style={{ backgroundColor: '#FAF6EE', borderRadius: 16, width: 220, overflow: 'hidden' }}
+            style={{ backgroundColor: '#FAF6EE', borderRadius: 18, width: 220, overflow: 'hidden' }}
           >
-            <Text
+            <View
               style={{
-                fontSize: 13,
-                fontWeight: '600',
-                color: '#A08060',
                 padding: 14,
-                paddingBottom: 8,
+                paddingBottom: 10,
+                borderBottomWidth: 1,
+                borderBottomColor: '#EDE0C4',
               }}
             >
-              เลือกภาษา
-            </Text>
+              <Text
+                style={{ fontSize: 11, fontWeight: '700', color: '#A08060', letterSpacing: 1.5 }}
+              >
+                เลือกภาษา
+              </Text>
+            </View>
             <FlatList
               data={LANGS}
               keyExtractor={(item) => item.value}
@@ -144,7 +182,7 @@ export function LanguageSelectorRow({ selectedLang, onSelectLang }: LanguageSele
                     flexDirection: 'row',
                     alignItems: 'center',
                     paddingHorizontal: 14,
-                    paddingVertical: 12,
+                    paddingVertical: 14,
                     backgroundColor: pressed ? '#F5EDD8' : 'transparent',
                     borderTopWidth: 1,
                     borderTopColor: '#EDE0C4',
@@ -152,9 +190,11 @@ export function LanguageSelectorRow({ selectedLang, onSelectLang }: LanguageSele
                   })}
                 >
                   <Text style={{ fontSize: 18 }}>{item.flag}</Text>
-                  <Text style={{ fontSize: 14, color: '#2C1A0E', flex: 1 }}>{item.label}</Text>
+                  <Text style={{ fontSize: 14, color: '#2C1A0E', flex: 1, fontWeight: '500' }}>
+                    {item.label}
+                  </Text>
                   {selectedLang === item.value && (
-                    <Ionicons name="checkmark" size={16} color="#C9A84C" />
+                    <Ionicons name="checkmark-circle" size={18} color="#C9A84C" />
                   )}
                 </Pressable>
               )}
@@ -162,6 +202,6 @@ export function LanguageSelectorRow({ selectedLang, onSelectLang }: LanguageSele
           </View>
         </Pressable>
       </Modal>
-    </View>
+    </>
   );
 }

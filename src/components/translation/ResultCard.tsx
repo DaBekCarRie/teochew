@@ -5,7 +5,6 @@ import { UnverifiedBadge } from './UnverifiedBadge';
 import { CopyButton } from './CopyButton';
 import { ShareButton } from './ShareButton';
 import { CorrectionButton } from './CorrectionButton';
-
 import { useUserStore } from '../../stores/userStore';
 
 interface ResultCardProps {
@@ -23,26 +22,33 @@ interface MeaningRowProps {
 function MeaningRow({ flag, text, accessibilityLabel }: MeaningRowProps) {
   return (
     <View
-      style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 6 }}
+      style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 7 }}
       accessibilityLabel={accessibilityLabel}
     >
-      <Text style={{ fontSize: 18 }}>{flag}</Text>
-      <Text style={{ fontSize: 15, color: '#2C1A0E', flex: 1 }}>{text}</Text>
+      <Text style={{ fontSize: 16 }}>{flag}</Text>
+      <Text style={{ fontSize: 15, color: '#3C2A18', flex: 1, lineHeight: 22 }}>{text}</Text>
     </View>
   );
 }
 
 export function ResultCard({ result, onCopied, onSubmitCorrection }: ResultCardProps) {
   const opacity = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(16)).current;
+  const translateY = useRef(new Animated.Value(20)).current;
+  const charScale = useRef(new Animated.Value(0.82)).current;
   const { language } = useUserStore();
 
   useEffect(() => {
     Animated.parallel([
-      Animated.spring(opacity, { toValue: 1, useNativeDriver: true }),
-      Animated.spring(translateY, { toValue: 0, useNativeDriver: true }),
+      Animated.spring(opacity, { toValue: 1, useNativeDriver: true, tension: 120, friction: 14 }),
+      Animated.spring(translateY, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 120,
+        friction: 14,
+      }),
+      Animated.spring(charScale, { toValue: 1, useNativeDriver: true, tension: 90, friction: 11 }),
     ]).start();
-  }, [opacity, translateY]);
+  }, [opacity, translateY, charScale]);
 
   const hasMeanings = result.thai_meaning || result.mandarin_char || result.english_meaning;
 
@@ -73,7 +79,7 @@ export function ResultCard({ result, onCopied, onSubmitCorrection }: ResultCardP
     />
   ) : null;
 
-  const orderedNodes = [];
+  const orderedNodes: (React.ReactNode | null)[] = [];
   if (language === 'th') {
     orderedNodes.push(thaiNode, enNode, zhNode);
   } else if (language === 'en') {
@@ -85,60 +91,99 @@ export function ResultCard({ result, onCopied, onSubmitCorrection }: ResultCardP
   return (
     <Animated.View
       style={{
-        backgroundColor: '#F5EDD8',
         borderWidth: 1,
         borderColor: '#D9C9A8',
-        borderRadius: 16,
-        padding: 20,
+        borderRadius: 20,
+        overflow: 'hidden',
         marginTop: 8,
         opacity,
         transform: [{ translateY }],
       }}
     >
-      {!result.verified && <UnverifiedBadge />}
-
-      {/* Main Teochew result */}
-      <Text
+      {/* Hero section — amber background */}
+      <View
         style={{
-          fontSize: 40,
-          fontWeight: '700',
-          color: '#2C1A0E',
-          textAlign: 'center',
-          marginTop: 4,
-          marginBottom: 4,
-        }}
-        accessibilityLabel={`${result.teochew_char ?? '—'} อ่านว่า ${result.pengim ?? '—'}`}
-      >
-        {result.teochew_char ?? '—'}
-      </Text>
-      <Text
-        style={{
-          fontSize: 18,
-          fontStyle: 'italic',
-          color: '#9A7A2E',
-          textAlign: 'center',
-          marginBottom: 16,
+          backgroundColor: '#EDE0C4',
+          alignItems: 'center',
+          paddingTop: result.verified ? 28 : 16,
+          paddingBottom: 24,
+          paddingHorizontal: 20,
         }}
       >
-        {result.pengim ?? '—'}
-      </Text>
+        {!result.verified && <UnverifiedBadge />}
 
-      {hasMeanings && (
-        <>
-          <View style={{ height: 1, backgroundColor: '#D9C9A8', marginBottom: 8 }} />
-          {orderedNodes}
-        </>
-      )}
+        {/* Character in a lit circle */}
+        <Animated.View
+          style={{
+            transform: [{ scale: charScale }],
+            width: 116,
+            height: 116,
+            borderRadius: 58,
+            backgroundColor: '#FAF6EE',
+            alignItems: 'center',
+            justifyContent: 'center',
+            shadowColor: '#6B4C2A',
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.14,
+            shadowRadius: 14,
+            elevation: 4,
+            marginTop: result.verified ? 0 : 10,
+            marginBottom: 14,
+          }}
+        >
+          <Text
+            style={{ fontSize: 52, fontWeight: '700', color: '#2C1A0E', textAlign: 'center' }}
+            accessibilityLabel={`${result.teochew_char ?? '—'} อ่านว่า ${result.pengim ?? '—'}`}
+          >
+            {result.teochew_char ?? '—'}
+          </Text>
+        </Animated.View>
 
-      <View style={{ height: 1, backgroundColor: '#D9C9A8', marginTop: 8, marginBottom: 12 }} />
-
-      {/* Action buttons */}
-      <View style={{ flexDirection: 'row', gap: 12 }}>
-        <CopyButton result={result} onCopied={onCopied} flex={1} />
-        <ShareButton result={result} flex={1} />
+        {/* Pengim in serif italic */}
+        <Text
+          style={{
+            fontSize: 20,
+            fontStyle: 'italic',
+            color: '#9A7A2E',
+            textAlign: 'center',
+            fontFamily: 'Georgia',
+            letterSpacing: 0.5,
+          }}
+        >
+          {result.pengim ?? '—'}
+        </Text>
       </View>
 
-      {!result.verified && <CorrectionButton onPress={onSubmitCorrection} />}
+      {/* Meanings + actions section */}
+      <View
+        style={{
+          backgroundColor: '#F5EDD8',
+          paddingHorizontal: 20,
+          paddingTop: 16,
+          paddingBottom: 20,
+        }}
+      >
+        {hasMeanings && (
+          <>
+            {orderedNodes}
+            <View
+              style={{ height: 1, backgroundColor: '#D9C9A8', marginTop: 8, marginBottom: 16 }}
+            />
+          </>
+        )}
+
+        {!hasMeanings && (
+          <View style={{ height: 1, backgroundColor: '#D9C9A8', marginBottom: 16 }} />
+        )}
+
+        {/* Action buttons */}
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <CopyButton result={result} onCopied={onCopied} flex={1} />
+          <ShareButton result={result} flex={1} />
+        </View>
+
+        {!result.verified && <CorrectionButton onPress={onSubmitCorrection} />}
+      </View>
     </Animated.View>
   );
 }

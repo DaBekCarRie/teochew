@@ -1,8 +1,10 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { LearningIntent } from '../types/dictionary';
 
 export type AppLanguage = 'th' | 'en' | 'zh';
 export type PlaybackSpeed = '0.75' | '1.0' | '1.25' | '1.5';
+export type { LearningIntent };
 
 export interface UserProfile {
   avatarUrl: string | null;
@@ -25,6 +27,7 @@ export interface UserStoreState {
   notifEnabled: boolean;
   notifTime: string;
   recentActivity: RecentActivity[];
+  learningIntent: LearningIntent;
 
   hydrate: () => Promise<void>;
   updateUser: (updates: Partial<UserProfile>) => Promise<void>;
@@ -32,6 +35,7 @@ export interface UserStoreState {
   setPlaybackSpeed: (speed: PlaybackSpeed) => Promise<void>;
   setNotifEnabled: (enabled: boolean) => Promise<void>;
   setNotifTime: (time: string) => Promise<void>;
+  setLearningIntent: (intent: LearningIntent) => Promise<void>;
   addActivity: (activity: Omit<RecentActivity, 'id' | 'timestamp'>) => Promise<void>;
   clearCache: () => Promise<void>;
   logout: () => Promise<void>;
@@ -51,6 +55,7 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
   notifEnabled: true,
   notifTime: '08:00',
   recentActivity: [],
+  learningIntent: 'general',
 
   hydrate: async () => {
     try {
@@ -90,6 +95,11 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
 
   setNotifTime: async (time) => {
     set({ notifTime: time });
+    await saveState(get());
+  },
+
+  setLearningIntent: async (intent) => {
+    set({ learningIntent: intent });
     await saveState(get());
   },
 
@@ -135,6 +145,7 @@ async function saveState(state: UserStoreState) {
       notifEnabled: state.notifEnabled,
       notifTime: state.notifTime,
       recentActivity: state.recentActivity,
+      learningIntent: state.learningIntent,
     };
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
   } catch (e) {

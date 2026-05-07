@@ -10,34 +10,51 @@ export function TranslationHeader({ onHistoryPress }: TranslationHeaderProps) {
   return (
     <View
       style={{
-        height: 52,
         paddingHorizontal: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        paddingTop: 12,
+        paddingBottom: 14,
         backgroundColor: '#FAF6EE',
         borderBottomWidth: 1,
         borderBottomColor: '#EDE0C4',
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        justifyContent: 'space-between',
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-        <Text style={{ fontSize: 18 }}>🎮</Text>
-        <Text style={{ fontSize: 17, fontWeight: '600', color: '#2C1A0E' }}>แปลภาษา</Text>
+      <View>
+        <Text
+          style={{
+            fontSize: 10,
+            fontWeight: '700',
+            color: '#C9A84C',
+            letterSpacing: 3,
+            marginBottom: 3,
+          }}
+        >
+          潮州語
+        </Text>
+        <Text style={{ fontSize: 22, fontWeight: '700', color: '#2C1A0E' }}>แปลภาษา</Text>
       </View>
 
       <Pressable
         onPress={onHistoryPress}
         style={({ pressed }) => ({
-          width: 44,
-          height: 44,
+          flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'center',
-          opacity: pressed ? 0.7 : 1,
+          gap: 5,
+          backgroundColor: pressed ? '#EDE0C4' : 'transparent',
+          borderWidth: 1,
+          borderColor: '#D9C9A8',
+          borderRadius: 20,
+          paddingHorizontal: 12,
+          paddingVertical: 8,
+          marginBottom: 2,
         })}
         accessibilityLabel="ประวัติการแปล"
         accessibilityRole="button"
       >
-        <Ionicons name="time-outline" size={22} color="#A08060" />
+        <Ionicons name="time-outline" size={14} color="#A08060" />
+        <Text style={{ fontSize: 12, color: '#6B4C2A', fontWeight: '500' }}>ประวัติ</Text>
       </Pressable>
     </View>
   );

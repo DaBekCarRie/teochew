@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 
 import { Ionicons } from '@expo/vector-icons';
 import { LessonCard } from '../../../components/lesson/LessonCard';
-import { LESSONS } from '../../../services/lessons';
+import { FAMILY_LESSON, LESSONS } from '../../../services/lessons';
 import { useLessonStore } from '../../../stores/lessonStore';
 import type { LessonState } from '../../../types/dictionary';
 
@@ -96,6 +96,16 @@ export default function LearnScreen() {
         >
           บทเรียนทั้งหมด
         </Text>
+
+        {/* Family phrases lesson — always unlocked, no XP */}
+        <LessonCard
+          key={FAMILY_LESSON.id}
+          lesson={FAMILY_LESSON}
+          state="unlocked"
+          progress={getProgress(FAMILY_LESSON.id)}
+          onPress={() => handleLessonPress(FAMILY_LESSON.id)}
+          onLockedPress={() => {}}
+        />
 
         {LESSONS.map((lesson) => {
           const state = getLessonState(lesson.id);

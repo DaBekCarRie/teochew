@@ -84,6 +84,9 @@ export interface Lesson {
 
 export type LessonState = 'locked' | 'unlocked' | 'in_progress' | 'completed';
 
+// Family Connection Flow — who the user wants to speak with
+export type LearningIntent = 'grandparent' | 'parent' | 'relative' | 'general';
+
 export interface LessonProgress {
   lessonId: string;
   flashcardDone: boolean;

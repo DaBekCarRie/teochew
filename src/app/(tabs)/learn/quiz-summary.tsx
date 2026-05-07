@@ -58,12 +58,15 @@ export default function QuizSummaryScreen() {
   const [unlockedTitle, setUnlockedTitle] = useState('');
 
   useEffect(() => {
-    // Delay XP award slightly so it doesn't overlap immediately with page transition
-    setTimeout(() => {
-      awardXP('quiz_complete', { lessonId, quizScore: score });
-    }, 500);
+    const isFamily = lessonId === 'lesson-family-phrases';
 
-    if (!lessonId) return;
+    if (!isFamily) {
+      setTimeout(() => {
+        awardXP('quiz_complete', { lessonId, quizScore: score });
+      }, 500);
+    }
+
+    if (!lessonId || isFamily) return;
     const lessonIds = LESSONS.map((l) => l.id);
     const wasUnlocked = isUnlocked(lessonIds[lessonIds.indexOf(lessonId) + 1] ?? '', lessonIds);
     setQuizScore(lessonId, score);
