@@ -25,7 +25,7 @@ export function InputArea({ value, onChangeText, onClear, maxLength = 200 }: Inp
     >
       <TextInput
         style={{
-          fontSize: 16,
+          fontSize: 17,
           color: '#2C1A0E',
           minHeight: 96,
           maxHeight: 160,
@@ -42,7 +42,7 @@ export function InputArea({ value, onChangeText, onClear, maxLength = 200 }: Inp
         onBlur={() => setFocused(false)}
         returnKeyType="done"
         accessibilityLabel="ช่องพิมพ์คำ"
-        accessibilityHint="พิมพ์คำหรือประโยคที่ต้องการแปลเป็นแต้จิ๋ว"
+        accessibilityHint="พิมพ์คำหรือประโยคที่ต้องการแปลเป็นไทย จีนกลาง และอังกฤษ"
       />
 
       {value.length > 0 && (

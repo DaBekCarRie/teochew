@@ -62,8 +62,8 @@ export function LanguageSelectorRow({ selectedLang, onSelectLang }: LanguageSele
         accessibilityLabel={`ภาษา input: ${current.label}`}
         accessibilityRole="button"
       >
-        <Text style={{ fontSize: 18 }}>{current.flag}</Text>
-        <Text style={{ fontSize: 14, fontWeight: '500', color: '#2C1A0E' }}>{current.label}</Text>
+        <Text style={{ fontSize: 20 }}>{current.flag}</Text>
+        <Text style={{ fontSize: 15, fontWeight: '600', color: '#2C1A0E' }}>{current.label}</Text>
         <Ionicons name="chevron-down" size={14} color="#A08060" />
       </Pressable>
 
@@ -87,23 +87,26 @@ export function LanguageSelectorRow({ selectedLang, onSelectLang }: LanguageSele
         </Animated.View>
       </Pressable>
 
-      {/* Fixed output label */}
+      {/* Fixed output label — Thai / EN / Mandarin */}
       <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          gap: 8,
+          gap: 4,
           backgroundColor: '#E8D5A3',
           borderWidth: 1,
           borderColor: '#C9A84C',
           borderRadius: 10,
-          paddingHorizontal: 14,
+          paddingHorizontal: 12,
           paddingVertical: 10,
           minHeight: 44,
         }}
       >
-        <Text style={{ fontSize: 18 }}>🎮</Text>
-        <Text style={{ fontSize: 14, fontWeight: '500', color: '#9A7A2E' }}>แต้จิ๋ว</Text>
+        <Text style={{ fontSize: 18 }}>🇹🇭</Text>
+        <Text style={{ fontSize: 12, color: '#9A7A2E', fontWeight: '500' }}>·</Text>
+        <Text style={{ fontSize: 18 }}>🇨🇳</Text>
+        <Text style={{ fontSize: 12, color: '#9A7A2E', fontWeight: '500' }}>·</Text>
+        <Text style={{ fontSize: 18 }}>🇬🇧</Text>
       </View>
 
       {/* Language picker modal */}
@@ -151,8 +154,8 @@ export function LanguageSelectorRow({ selectedLang, onSelectLang }: LanguageSele
                     gap: 10,
                   })}
                 >
-                  <Text style={{ fontSize: 18 }}>{item.flag}</Text>
-                  <Text style={{ fontSize: 14, color: '#2C1A0E', flex: 1 }}>{item.label}</Text>
+                  <Text style={{ fontSize: 20 }}>{item.flag}</Text>
+                  <Text style={{ fontSize: 15, color: '#2C1A0E', flex: 1 }}>{item.label}</Text>
                   {selectedLang === item.value && (
                     <Ionicons name="checkmark" size={16} color="#C9A84C" />
                   )}

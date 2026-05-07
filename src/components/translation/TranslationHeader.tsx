@@ -21,8 +21,8 @@ export function TranslationHeader({ onHistoryPress }: TranslationHeaderProps) {
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-        <Text style={{ fontSize: 18 }}>🎮</Text>
-        <Text style={{ fontSize: 17, fontWeight: '600', color: '#2C1A0E' }}>แปลภาษา</Text>
+        <Text style={{ fontSize: 20 }}>🌐</Text>
+        <Text style={{ fontSize: 20, fontWeight: '700', color: '#2C1A0E' }}>แปลภาษา</Text>
       </View>
 
       <Pressable

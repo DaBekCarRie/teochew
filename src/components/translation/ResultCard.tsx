@@ -1,17 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated } from 'react-native';
 import type { TranslationResult } from '../../types/translation';
-import { UnverifiedBadge } from './UnverifiedBadge';
 import { CopyButton } from './CopyButton';
 import { ShareButton } from './ShareButton';
-import { CorrectionButton } from './CorrectionButton';
-
 import { useUserStore } from '../../stores/userStore';
 
 interface ResultCardProps {
   result: TranslationResult;
   onCopied: () => void;
-  onSubmitCorrection: () => void;
 }
 
 interface MeaningRowProps {
@@ -23,24 +19,36 @@ interface MeaningRowProps {
 function MeaningRow({ flag, text, accessibilityLabel }: MeaningRowProps) {
   return (
     <View
-      style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 6 }}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        paddingVertical: 8,
+      }}
       accessibilityLabel={accessibilityLabel}
     >
-      <Text style={{ fontSize: 18 }}>{flag}</Text>
-      <Text style={{ fontSize: 15, color: '#2C1A0E', flex: 1 }}>{text}</Text>
+      <Text style={{ fontSize: 20 }}>{flag}</Text>
+      <Text style={{ fontSize: 16, color: '#2C1A0E', flex: 1, lineHeight: 24, fontWeight: '500' }}>
+        {text}
+      </Text>
     </View>
   );
 }
 
-export function ResultCard({ result, onCopied, onSubmitCorrection }: ResultCardProps) {
+export function ResultCard({ result, onCopied }: ResultCardProps) {
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(16)).current;
   const { language } = useUserStore();
 
   useEffect(() => {
     Animated.parallel([
-      Animated.spring(opacity, { toValue: 1, useNativeDriver: true }),
-      Animated.spring(translateY, { toValue: 0, useNativeDriver: true }),
+      Animated.spring(opacity, { toValue: 1, useNativeDriver: true, tension: 100, friction: 14 }),
+      Animated.spring(translateY, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 100,
+        friction: 14,
+      }),
     ]).start();
   }, [opacity, translateY]);
 
@@ -73,7 +81,7 @@ export function ResultCard({ result, onCopied, onSubmitCorrection }: ResultCardP
     />
   ) : null;
 
-  const orderedNodes = [];
+  const orderedNodes: (React.ReactNode | null)[] = [];
   if (language === 'th') {
     orderedNodes.push(thaiNode, enNode, zhNode);
   } else if (language === 'en') {
@@ -85,60 +93,39 @@ export function ResultCard({ result, onCopied, onSubmitCorrection }: ResultCardP
   return (
     <Animated.View
       style={{
-        backgroundColor: '#F5EDD8',
+        borderRadius: 22,
+        overflow: 'hidden',
         borderWidth: 1,
         borderColor: '#D9C9A8',
-        borderRadius: 16,
-        padding: 20,
-        marginTop: 8,
+        shadowColor: '#6B4C2A',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 3,
         opacity,
         transform: [{ translateY }],
+        backgroundColor: '#FAF6EE',
       }}
     >
-      {!result.verified && <UnverifiedBadge />}
+      <View style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 20 }}>
+        {hasMeanings && (
+          <>
+            <View style={{ marginBottom: 4 }}>{orderedNodes}</View>
+            <View
+              style={{ height: 1, backgroundColor: '#EDE0C4', marginTop: 4, marginBottom: 16 }}
+            />
+          </>
+        )}
 
-      {/* Main Teochew result */}
-      <Text
-        style={{
-          fontSize: 40,
-          fontWeight: '700',
-          color: '#2C1A0E',
-          textAlign: 'center',
-          marginTop: 4,
-          marginBottom: 4,
-        }}
-        accessibilityLabel={`${result.teochew_char ?? '—'} อ่านว่า ${result.pengim ?? '—'}`}
-      >
-        {result.teochew_char ?? '—'}
-      </Text>
-      <Text
-        style={{
-          fontSize: 18,
-          fontStyle: 'italic',
-          color: '#9A7A2E',
-          textAlign: 'center',
-          marginBottom: 16,
-        }}
-      >
-        {result.pengim ?? '—'}
-      </Text>
+        {!hasMeanings && (
+          <View style={{ height: 1, backgroundColor: '#EDE0C4', marginBottom: 16 }} />
+        )}
 
-      {hasMeanings && (
-        <>
-          <View style={{ height: 1, backgroundColor: '#D9C9A8', marginBottom: 8 }} />
-          {orderedNodes}
-        </>
-      )}
-
-      <View style={{ height: 1, backgroundColor: '#D9C9A8', marginTop: 8, marginBottom: 12 }} />
-
-      {/* Action buttons */}
-      <View style={{ flexDirection: 'row', gap: 12 }}>
-        <CopyButton result={result} onCopied={onCopied} flex={1} />
-        <ShareButton result={result} flex={1} />
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <CopyButton result={result} onCopied={onCopied} flex={1} />
+          <ShareButton result={result} flex={1} />
+        </View>
       </View>
-
-      {!result.verified && <CorrectionButton onPress={onSubmitCorrection} />}
     </Animated.View>
   );
 }

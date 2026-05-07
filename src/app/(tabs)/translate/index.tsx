@@ -28,7 +28,6 @@ import { ResultSkeleton } from '../../../components/translation/ResultSkeleton';
 import { TranslationEmptyState } from '../../../components/translation/TranslationEmptyState';
 import { TranslationErrorState } from '../../../components/translation/TranslationErrorState';
 import { CopiedToast } from '../../../components/translation/CopiedToast';
-import { CrowdsourceBottomSheet } from '../../../components/translation/CrowdsourceBottomSheet';
 
 function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -44,7 +43,6 @@ export default function TranslationScreen() {
   const [result, setResult] = useState<TranslationResult | null>(null);
   const [errorType, setErrorType] = useState<ErrorType>(null);
   const [showCopiedToast, setShowCopiedToast] = useState(false);
-  const [showCrowdsource, setShowCrowdsource] = useState(false);
 
   React.useEffect(() => {
     if (!hydrated) hydrate();
@@ -145,11 +143,7 @@ export default function TranslationScreen() {
           {screenState === 'idle' && <TranslationEmptyState />}
           {screenState === 'loading' && <ResultSkeleton />}
           {screenState === 'success' && result && (
-            <ResultCard
-              result={result}
-              onCopied={handleCopied}
-              onSubmitCorrection={() => setShowCrowdsource(true)}
-            />
+            <ResultCard result={result} onCopied={handleCopied} />
           )}
           {(screenState === 'error' || screenState === 'rate_limited') && (
             <TranslationErrorState errorType={errorType} onRetry={handleTranslate} />
@@ -158,14 +152,6 @@ export default function TranslationScreen() {
       </ScrollView>
 
       <CopiedToast visible={showCopiedToast} />
-
-      {showCrowdsource && result && (
-        <CrowdsourceBottomSheet
-          isVisible={showCrowdsource}
-          onClose={() => setShowCrowdsource(false)}
-          wordResult={result}
-        />
-      )}
     </SafeAreaView>
   );
 }
