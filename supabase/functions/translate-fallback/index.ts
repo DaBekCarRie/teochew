@@ -13,8 +13,8 @@ serve(async (req) => {
   try {
     const { mandarin_char } = (await req.json()) as { mandarin_char: string };
 
-    const prompt = `Translate the Mandarin Chinese word/phrase "${mandarin_char}" into Teochew dialect.
-Provide JSON with keys: teochew_char, pengim (Teochew romanization with tone numbers 1-8), thai_meaning, english_meaning.
+    const prompt = `Translate the Mandarin Chinese word/phrase "${mandarin_char}".
+Provide JSON with keys: thai_meaning (Thai translation), english_meaning (English translation).
 Return only valid JSON, no explanation.`;
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {

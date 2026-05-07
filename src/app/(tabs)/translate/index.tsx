@@ -28,7 +28,6 @@ import { ResultSkeleton } from '../../../components/translation/ResultSkeleton';
 import { TranslationEmptyState } from '../../../components/translation/TranslationEmptyState';
 import { TranslationErrorState } from '../../../components/translation/TranslationErrorState';
 import { CopiedToast } from '../../../components/translation/CopiedToast';
-import { CrowdsourceBottomSheet } from '../../../components/translation/CrowdsourceBottomSheet';
 
 function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -44,7 +43,6 @@ export default function TranslationScreen() {
   const [result, setResult] = useState<TranslationResult | null>(null);
   const [errorType, setErrorType] = useState<ErrorType>(null);
   const [showCopiedToast, setShowCopiedToast] = useState(false);
-  const [showCrowdsource, setShowCrowdsource] = useState(false);
 
   React.useEffect(() => {
     if (!hydrated) hydrate();
@@ -117,39 +115,53 @@ export default function TranslationScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FAF6EE' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F5EDD8' }}>
       <TranslationHeader onHistoryPress={() => router.push('/translate/history')} />
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 48 }}
+        contentContainerStyle={{ paddingBottom: 48 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <LanguageSelectorRow selectedLang={selectedLang} onSelectLang={setSelectedLang} />
+        {/* Input card */}
+        <View
+          style={{
+            marginHorizontal: 16,
+            marginTop: 16,
+            backgroundColor: '#FAF6EE',
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: '#E5D8BE',
+            paddingHorizontal: 16,
+            paddingTop: 4,
+            paddingBottom: 16,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.06,
+            shadowRadius: 8,
+            elevation: 2,
+          }}
+        >
+          <LanguageSelectorRow selectedLang={selectedLang} onSelectLang={setSelectedLang} />
+          <InputArea
+            value={inputText}
+            onChangeText={setInputText}
+            onClear={handleClear}
+            maxLength={200}
+          />
+          <TranslateButton
+            onPress={handleTranslate}
+            disabled={inputText.trim().length === 0}
+            isLoading={screenState === 'loading'}
+          />
+        </View>
 
-        <InputArea
-          value={inputText}
-          onChangeText={setInputText}
-          onClear={handleClear}
-          maxLength={200}
-        />
-
-        <TranslateButton
-          onPress={handleTranslate}
-          disabled={inputText.trim().length === 0}
-          isLoading={screenState === 'loading'}
-        />
-
-        <View style={{ marginTop: 24 }}>
+        <View style={{ marginTop: 20, paddingHorizontal: 16 }}>
           {screenState === 'idle' && <TranslationEmptyState />}
           {screenState === 'loading' && <ResultSkeleton />}
           {screenState === 'success' && result && (
-            <ResultCard
-              result={result}
-              onCopied={handleCopied}
-              onSubmitCorrection={() => setShowCrowdsource(true)}
-            />
+            <ResultCard result={result} onCopied={handleCopied} />
           )}
           {(screenState === 'error' || screenState === 'rate_limited') && (
             <TranslationErrorState errorType={errorType} onRetry={handleTranslate} />
@@ -158,14 +170,6 @@ export default function TranslationScreen() {
       </ScrollView>
 
       <CopiedToast visible={showCopiedToast} />
-
-      {showCrowdsource && result && (
-        <CrowdsourceBottomSheet
-          isVisible={showCrowdsource}
-          onClose={() => setShowCrowdsource(false)}
-          wordResult={result}
-        />
-      )}
     </SafeAreaView>
   );
 }

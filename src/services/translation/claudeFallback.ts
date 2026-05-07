@@ -42,10 +42,10 @@ export async function claudeFallback(
     return {
       input_text,
       mandarin_char,
-      teochew_char: '？',
-      pengim: 'aa1',
+      teochew_char: null,
+      pengim: null,
       thai_meaning: `[AI: ${mandarin_char}]`,
-      english_meaning: null,
+      english_meaning: `[AI: ${mandarin_char}]`,
       verified: false,
       source: 'claude_ai',
       detected_lang,
@@ -64,12 +64,7 @@ export async function claudeFallback(
 
   const text = data.content.find((c) => c.type === 'text')?.text ?? '{}';
 
-  let parsed: {
-    teochew_char?: string;
-    pengim?: string;
-    thai_meaning?: string;
-    english_meaning?: string;
-  } = {};
+  let parsed: { thai_meaning?: string; english_meaning?: string } = {};
   try {
     parsed = JSON.parse(text) as typeof parsed;
   } catch {}
@@ -77,8 +72,8 @@ export async function claudeFallback(
   return {
     input_text,
     mandarin_char,
-    teochew_char: parsed.teochew_char ?? null,
-    pengim: parsed.pengim ?? null,
+    teochew_char: null,
+    pengim: null,
     thai_meaning: parsed.thai_meaning ?? null,
     english_meaning: parsed.english_meaning ?? null,
     verified: false,
