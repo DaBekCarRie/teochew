@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { InputLang, TranslationResult } from '../../types/translation';
+import { supabase } from '../supabase/client';
 
 const MAX_CALLS_PER_DAY = 20;
 
@@ -51,37 +52,17 @@ export async function claudeFallback(
     };
   }
 
-  const apiKey = process.env.EXPO_PUBLIC_ANTHROPIC_KEY;
-  if (!apiKey) throw new Error('EXPO_PUBLIC_ANTHROPIC_KEY not set');
+  const { data, error } = await supabase.functions.invoke<{
+    content: { type: string; text: string }[];
+  }>('translate-fallback', { body: { mandarin_char } });
 
-  const prompt = `Translate the Mandarin Chinese word/phrase "${mandarin_char}" into Teochew dialect.
-Provide JSON with keys: teochew_char, pengim (Teochew romanization with tone numbers 1-8), thai_meaning, english_meaning.
-Return only valid JSON, no explanation.`;
-
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 256,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
-
-  if (!response.ok) {
+  if (error || !data) {
     const err = new Error('Claude API error');
     err.name = 'NetworkError';
     throw err;
   }
 
-  const json = (await response.json()) as {
-    content: { type: string; text: string }[];
-  };
-  const text = json.content.find((c) => c.type === 'text')?.text ?? '{}';
+  const text = data.content.find((c) => c.type === 'text')?.text ?? '{}';
 
   let parsed: {
     teochew_char?: string;

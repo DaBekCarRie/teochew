@@ -13,6 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import type { TranslationResult } from '../../types/translation';
 import { UnverifiedBadge } from './UnverifiedBadge';
+import { submitCorrection } from '../../services/supabase/corrections';
 
 interface CrowdsourceBottomSheetProps {
   isVisible: boolean;
@@ -45,7 +46,12 @@ export function CrowdsourceBottomSheet({
     if (!isValid || isSubmitting) return;
     setIsSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      await submitCorrection({
+        wordResult,
+        suggestedTeochewChar: teochewChar,
+        suggestedPengim: pengim,
+        note,
+      });
       setSubmitState('success');
       setTimeout(handleClose, 3000);
     } catch {
