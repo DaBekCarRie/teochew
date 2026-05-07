@@ -71,14 +71,6 @@ export async function normalizeToMandarin(
     };
   }
 
-  if (__DEV__) {
-    const key = trimmed.toLowerCase();
-    const mandarin_char = MOCK_MAP[key] ?? trimmed;
-    cache[cacheKey] = { mandarin_char, detected_lang: lang, ts: Date.now() };
-    await saveCache(cache);
-    return { mandarin_char, detected_lang: lang, source: 'api' };
-  }
-
   const sourceLang = lang === 'th' ? 'th' : 'en';
   const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(trimmed)}&langpair=${sourceLang}|zh`;
   const response = await fetch(url);
