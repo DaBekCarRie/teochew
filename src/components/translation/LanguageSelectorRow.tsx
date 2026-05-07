@@ -93,8 +93,8 @@ export function LanguageSelectorRow({ selectedLang, onSelectLang }: LanguageSele
             accessibilityLabel={`ภาษา input: ${current.label}`}
             accessibilityRole="button"
           >
-            <Text style={{ fontSize: 18 }}>{current.flag}</Text>
-            <Text style={{ fontSize: 14, fontWeight: '600', color: '#2C1A0E', flex: 1 }}>
+            <Text style={{ fontSize: 20 }}>{current.flag}</Text>
+            <Text style={{ fontSize: 15, fontWeight: '600', color: '#2C1A0E', flex: 1 }}>
               {current.label}
             </Text>
             <Ionicons name="chevron-down" size={13} color="#A08060" />
@@ -120,23 +120,27 @@ export function LanguageSelectorRow({ selectedLang, onSelectLang }: LanguageSele
             </Animated.View>
           </Pressable>
 
-          {/* Fixed Teochew output */}
+          {/* Fixed output: Thai · Mandarin · English */}
           <View
             style={{
               flex: 1,
               flexDirection: 'row',
               alignItems: 'center',
-              gap: 8,
+              justifyContent: 'center',
+              gap: 4,
               backgroundColor: '#EDE0C4',
               borderWidth: 1.5,
               borderColor: '#C9A84C',
               borderRadius: 12,
-              paddingHorizontal: 14,
+              paddingHorizontal: 10,
               paddingVertical: 12,
             }}
           >
-            <Text style={{ fontSize: 16, fontWeight: '700', color: '#9A7A2E' }}>潮</Text>
-            <Text style={{ fontSize: 14, fontWeight: '600', color: '#9A7A2E' }}>แต้จิ๋ว</Text>
+            <Text style={{ fontSize: 18 }}>🇹🇭</Text>
+            <Text style={{ fontSize: 11, color: '#9A7A2E', fontWeight: '600' }}>·</Text>
+            <Text style={{ fontSize: 18 }}>🇨🇳</Text>
+            <Text style={{ fontSize: 11, color: '#9A7A2E', fontWeight: '600' }}>·</Text>
+            <Text style={{ fontSize: 18 }}>🇬🇧</Text>
           </View>
         </View>
       </View>
@@ -189,8 +193,8 @@ export function LanguageSelectorRow({ selectedLang, onSelectLang }: LanguageSele
                     gap: 10,
                   })}
                 >
-                  <Text style={{ fontSize: 18 }}>{item.flag}</Text>
-                  <Text style={{ fontSize: 14, color: '#2C1A0E', flex: 1, fontWeight: '500' }}>
+                  <Text style={{ fontSize: 20 }}>{item.flag}</Text>
+                  <Text style={{ fontSize: 15, color: '#2C1A0E', flex: 1, fontWeight: '500' }}>
                     {item.label}
                   </Text>
                   {selectedLang === item.value && (

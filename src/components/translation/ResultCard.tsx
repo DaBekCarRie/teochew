@@ -27,8 +27,8 @@ function MeaningRow({ flag, text, accessibilityLabel }: MeaningRowProps) {
       }}
       accessibilityLabel={accessibilityLabel}
     >
-      <Text style={{ fontSize: 18 }}>{flag}</Text>
-      <Text style={{ fontSize: 15, color: '#3C2A18', flex: 1, lineHeight: 22, fontWeight: '500' }}>
+      <Text style={{ fontSize: 20 }}>{flag}</Text>
+      <Text style={{ fontSize: 16, color: '#2C1A0E', flex: 1, lineHeight: 24, fontWeight: '500' }}>
         {text}
       </Text>
     </View>
