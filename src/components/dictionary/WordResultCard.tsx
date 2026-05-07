@@ -6,6 +6,7 @@ import { CategoryBadge } from './CategoryBadge';
 import { VerifiedBadge } from './VerifiedBadge';
 import { BookmarkButton } from './BookmarkButton';
 import { InlineAudioButton } from '../audio/InlineAudioButton';
+import { TTSButton } from './TTSButton';
 
 import { useUserStore } from '../../stores/userStore';
 
@@ -133,13 +134,12 @@ export function WordResultCard({
         </View>
       </View>
 
-      {/* ROW 2: Peng'im */}
-      <HighlightText
-        text={entry.teochew_pengim}
-        query={query}
-        textClassName="text-[15px] italic text-gold-700 mt-0.5"
-        highlightClassName="bg-gold-200 text-gold-700 font-semibold"
-      />
+      {/* ROW 2: TTS buttons */}
+      <View className="flex-row items-center gap-2 mt-1.5">
+        <TTSButton text={entry.thai_meaning} language="th" />
+        <TTSButton text={entry.english_meaning} language="en" />
+        <TTSButton text={entry.mandarin_char ?? ''} language="zh" disabled={!entry.mandarin_char} />
+      </View>
 
       {/* Divider */}
       <View className="border-t border-cream-300 my-2" />

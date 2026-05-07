@@ -16,6 +16,7 @@ export interface UsageExample {
   teochew_pengim: string;
   thai_meaning: string;
   english_meaning: string;
+  mandarin_meaning?: string;
 }
 
 export interface WordDetail extends WordEntry {

@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { BookmarkItem } from '../../types/dictionary';
 import { CategoryBadge } from './CategoryBadge';
 import { BookmarkButton } from './BookmarkButton';
+import { TTSButton } from './TTSButton';
 
 import { useUserStore } from '../../stores/userStore';
 
@@ -118,8 +119,11 @@ export function SavedWordCard({
         )}
       </View>
 
-      {/* ROW 2: Peng'im */}
-      <Text className="text-[15px] italic text-gold-700 mt-0.5">{item.teochew_pengim}</Text>
+      {/* ROW 2: TTS buttons */}
+      <View className="flex-row items-center gap-2 mt-1.5">
+        <TTSButton text={item.thai_meaning} language="th" />
+        <TTSButton text={item.english_meaning} language="en" />
+      </View>
 
       {/* Divider */}
       <View className="border-t border-cream-300 my-2" />

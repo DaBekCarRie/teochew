@@ -12,6 +12,7 @@ import { FullAudioSection } from '../../../components/audio/FullAudioSection';
 import { CompactToneIndicator } from '../../../components/tone/CompactToneIndicator';
 import { ToneTooltip } from '../../../components/tone/ToneTooltip';
 import { parseToneNumbers } from '../../../utils/toneParser';
+import { TTSButton } from '../../../components/dictionary/TTSButton';
 import type { WordDetail, UsageExample } from '../../../types/dictionary';
 
 function SectionLabel({ label }: { label: string }) {
@@ -38,7 +39,6 @@ function ExampleRow({ example, index }: { example: UsageExample; index: number }
           <Text className="text-[18px] font-bold text-brown-900 leading-snug">
             {example.teochew_char}
           </Text>
-          <Text className="text-sm italic text-gold-700 mt-0.5">{example.teochew_pengim}</Text>
           <View className="flex-row mt-1.5 gap-3">
             <Text className="text-sm text-brown-900 flex-1">
               <Text className="text-brown-400">TH </Text>
@@ -49,6 +49,21 @@ function ExampleRow({ example, index }: { example: UsageExample; index: number }
             <Text className="text-brown-400">EN </Text>
             {example.english_meaning}
           </Text>
+          {example.mandarin_meaning && (
+            <Text className="text-sm text-brown-400 mt-0.5">
+              <Text className="text-brown-300">ZH </Text>
+              {example.mandarin_meaning}
+            </Text>
+          )}
+          <View className="flex-row items-center gap-2 mt-2">
+            <TTSButton text={example.thai_meaning} language="th" />
+            <TTSButton text={example.english_meaning} language="en" />
+            <TTSButton
+              text={example.mandarin_meaning ?? ''}
+              language="zh"
+              disabled={!example.mandarin_meaning}
+            />
+          </View>
         </View>
       </View>
     </View>
@@ -162,17 +177,8 @@ export default function WordDetailScreen() {
             </View>
           </View>
 
-          {/* Pengim + tone badges */}
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: 8,
-              marginTop: 4,
-            }}
-          >
-            <Text className="text-xl italic text-gold-700">{word.teochew_pengim}</Text>
+          {/* Tone badges */}
+          <View className="flex-row items-center mt-1">
             <CompactToneIndicator
               toneNumbers={parseToneNumbers(word.teochew_pengim)}
               onPress={() => {
@@ -209,6 +215,17 @@ export default function WordDetailScreen() {
               </View>
             </>
           )}
+
+          {/* TTS buttons */}
+          <View className="flex-row items-center gap-2 mt-3">
+            <TTSButton text={word.thai_meaning} language="th" />
+            <TTSButton text={word.english_meaning} language="en" />
+            <TTSButton
+              text={word.mandarin_char ?? ''}
+              language="zh"
+              disabled={!word.mandarin_char}
+            />
+          </View>
         </View>
         <FullAudioSection audioUrl={word.teochew_audio} wordTeochew={word.teochew_char} />
 
