@@ -79,27 +79,24 @@ export async function normalizeToMandarin(
     return { mandarin_char, detected_lang: lang, source: 'api' };
   }
 
-  const apiKey = process.env.EXPO_PUBLIC_GOOGLE_TRANSLATE_KEY;
-  if (!apiKey) throw new Error('EXPO_PUBLIC_GOOGLE_TRANSLATE_KEY not set');
-
-  const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ q: trimmed, target: 'zh-CN', format: 'text' }),
-  });
+  const sourceLang = lang === 'th' ? 'th' : 'en';
+  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(trimmed)}&langpair=${sourceLang}|zh`;
+  const response = await fetch(url);
   if (!response.ok) {
-    if (response.status === 429) {
-      const err = new Error('Google rate limit');
-      err.name = 'RateLimitGoogleError';
-      throw err;
-    }
-    const err = new Error('Google Translate API error');
+    const err = new Error('MyMemory API error');
     err.name = 'NetworkError';
     throw err;
   }
-  const json = (await response.json()) as { data: { translations: { translatedText: string }[] } };
-  const mandarin_char = json.data.translations[0]?.translatedText ?? trimmed;
+  const json = (await response.json()) as {
+    responseData: { translatedText: string };
+    responseStatus: number;
+  };
+  if (json.responseStatus === 429) {
+    const err = new Error('MyMemory rate limit');
+    err.name = 'RateLimitGoogleError';
+    throw err;
+  }
+  const mandarin_char = json.responseData.translatedText ?? trimmed;
 
   cache[cacheKey] = { mandarin_char, detected_lang: lang, ts: Date.now() };
   await saveCache(cache);
