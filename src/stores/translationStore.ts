@@ -19,7 +19,11 @@ interface TranslationStoreState {
 async function loadHistory(): Promise<HistoryEntry[]> {
   try {
     const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as HistoryEntry[]) : [];
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as HistoryEntry[];
+    // Migration guard: old entries had teochew_char instead of output_text
+    if (parsed.length > 0 && !parsed[0].result?.output_text) return [];
+    return parsed;
   } catch {
     return [];
   }

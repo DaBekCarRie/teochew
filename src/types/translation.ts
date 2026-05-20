@@ -1,25 +1,19 @@
-export type InputLang = 'th' | 'zh' | 'en';
+export type Lang = 'th' | 'zh' | 'en';
 
-export type TranslationScreenState = 'idle' | 'loading' | 'success' | 'error' | 'rate_limited';
+export type TranslationScreenState = 'idle' | 'loading' | 'success' | 'error';
 
-export type ErrorType = 'network' | 'rate_limit_google' | 'rate_limit_claude' | 'unknown' | null;
+export type ErrorType = 'network' | 'rate_limit' | 'unknown' | null;
 
 export interface TranslationResult {
   input_text: string;
-  mandarin_char: string;
-  teochew_char: string | null;
-  pengim: string | null;
-  thai_meaning: string | null;
-  english_meaning: string | null;
-  verified: boolean;
-  source: 'dataset' | 'claude_ai';
-  detected_lang: InputLang;
+  output_text: string;
+  source_lang: Lang;
+  target_lang: Lang;
+  source: 'api' | 'cache';
 }
 
 export interface HistoryEntry {
   id: string;
-  input_text: string;
-  detected_lang: InputLang;
-  result: TranslationResult;
   translated_at: string;
+  result: TranslationResult;
 }

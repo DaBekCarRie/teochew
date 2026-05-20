@@ -8,10 +8,6 @@ import { getWordDetail } from '../../../services/supabase/words';
 import { useBookmarks } from '../../../hooks/useBookmarks';
 import { BookmarkButton } from '../../../components/dictionary/BookmarkButton';
 import { VerifiedBadge } from '../../../components/dictionary/VerifiedBadge';
-import { FullAudioSection } from '../../../components/audio/FullAudioSection';
-import { CompactToneIndicator } from '../../../components/tone/CompactToneIndicator';
-import { ToneTooltip } from '../../../components/tone/ToneTooltip';
-import { parseToneNumbers } from '../../../utils/toneParser';
 import { TTSButton } from '../../../components/dictionary/TTSButton';
 import type { WordDetail, UsageExample } from '../../../types/dictionary';
 
@@ -28,6 +24,7 @@ function Divider() {
 }
 
 function ExampleRow({ example, index }: { example: UsageExample; index: number }) {
+  const heroText = example.mandarin_meaning || example.thai_meaning;
   return (
     <View
       className="bg-cream-100 rounded-[10px] px-4 py-3 mb-3"
@@ -36,9 +33,7 @@ function ExampleRow({ example, index }: { example: UsageExample; index: number }
       <View className="flex-row items-start gap-2">
         <Text className="text-xs font-semibold text-gold-700 mt-0.5">{index + 1}</Text>
         <View className="flex-1">
-          <Text className="text-[18px] font-bold text-brown-900 leading-snug">
-            {example.teochew_char}
-          </Text>
+          <Text className="text-[18px] font-bold text-brown-900 leading-snug">{heroText}</Text>
           <View className="flex-row mt-1.5 gap-3">
             <Text className="text-sm text-brown-900 flex-1">
               <Text className="text-brown-400">TH </Text>
@@ -49,12 +44,6 @@ function ExampleRow({ example, index }: { example: UsageExample; index: number }
             <Text className="text-brown-400">EN </Text>
             {example.english_meaning}
           </Text>
-          {example.mandarin_meaning && (
-            <Text className="text-sm text-brown-400 mt-0.5">
-              <Text className="text-brown-300">ZH </Text>
-              {example.mandarin_meaning}
-            </Text>
-          )}
           <View className="flex-row items-center gap-2 mt-2">
             <TTSButton text={example.thai_meaning} language="th" />
             <TTSButton text={example.english_meaning} language="en" />
@@ -77,7 +66,6 @@ export default function WordDetailScreen() {
 
   const [word, setWord] = useState<WordDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [tooltipTone, setTooltipTone] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -135,7 +123,7 @@ export default function WordDetailScreen() {
     <SafeAreaView className="flex-1 bg-cream-50" edges={['bottom']}>
       <Stack.Screen
         options={{
-          title: word.teochew_char,
+          title: word.mandarin_char || word.thai_meaning,
           headerShown: true,
           headerRight: () => (
             <BookmarkButton
@@ -165,7 +153,7 @@ export default function WordDetailScreen() {
           {/* Top row: char + badge */}
           <View className="flex-row items-start justify-between">
             <Text className="text-6xl font-bold text-brown-900" style={{ lineHeight: 76 }}>
-              {word.teochew_char}
+              {word.mandarin_char || word.thai_meaning}
             </Text>
             <View className="flex-row items-center gap-2 mt-2">
               {word.category && (
@@ -177,16 +165,9 @@ export default function WordDetailScreen() {
             </View>
           </View>
 
-          {/* Tone badges */}
-          <View className="flex-row items-center mt-1">
-            <CompactToneIndicator
-              toneNumbers={parseToneNumbers(word.teochew_pengim)}
-              onPress={() => {
-                const tones = parseToneNumbers(word.teochew_pengim);
-                if (tones.length > 0) setTooltipTone(tones[0]);
-              }}
-            />
-          </View>
+          {word.mandarin_pinyin ? (
+            <Text className="text-base italic text-gold-700 mt-1">{word.mandarin_pinyin}</Text>
+          ) : null}
 
           <Divider />
 
@@ -227,7 +208,6 @@ export default function WordDetailScreen() {
             />
           </View>
         </View>
-        <FullAudioSection audioUrl={word.teochew_audio} wordTeochew={word.teochew_char} />
 
         {/* Notes */}
         {word.notes && (
@@ -252,15 +232,6 @@ export default function WordDetailScreen() {
           </View>
         )}
       </ScrollView>
-
-      {/* Tone tooltip — shown when tone badge is tapped */}
-      {tooltipTone !== null && (
-        <ToneTooltip
-          toneNumber={tooltipTone}
-          visible={tooltipTone !== null}
-          onClose={() => setTooltipTone(null)}
-        />
-      )}
     </SafeAreaView>
   );
 }

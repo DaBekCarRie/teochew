@@ -67,12 +67,8 @@ export function FlashcardCard({
           {word.teochew_char}
         </Text>
 
-        <Text className="text-[18px] italic text-gold-700 mt-2 text-center">
-          {word.teochew_pengim}
-        </Text>
-
         <View className="mt-2">
-          <CompactToneIndicator toneNumbers={parseToneNumbers(word.teochew_pengim)} />
+          <CompactToneIndicator toneNumbers={parseToneNumbers(word.teochew_pengim ?? '')} />
         </View>
 
         <CardAudioButton audioUrl={word.teochew_audio} size="md" />
@@ -99,8 +95,7 @@ export function FlashcardCard({
         {/* Teochew recap */}
         <Text className="text-2xl font-bold text-brown-900 text-center">{word.teochew_char}</Text>
         <View className="flex-row items-center gap-2 mt-1 flex-wrap">
-          <Text className="text-base italic text-gold-700">{word.teochew_pengim}</Text>
-          <CompactToneIndicator toneNumbers={parseToneNumbers(word.teochew_pengim)} />
+          <CompactToneIndicator toneNumbers={parseToneNumbers(word.teochew_pengim ?? '')} />
           <CardAudioButton audioUrl={word.teochew_audio} size="sm" />
         </View>
 

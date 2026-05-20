@@ -26,7 +26,7 @@ export function useWordSearch(
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
-    if (!debouncedQuery || debouncedQuery.trim().length < 1) {
+    if (!debouncedQuery || debouncedQuery.trim().length < 2) {
       setStatus('idle');
       setResults([]);
       return;

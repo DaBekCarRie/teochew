@@ -49,7 +49,7 @@ export default function SavedWordsScreen() {
         return new Date(b.bookmarked_at).getTime() - new Date(a.bookmarked_at).getTime();
       if (sortBy === 'oldest')
         return new Date(a.bookmarked_at).getTime() - new Date(b.bookmarked_at).getTime();
-      return a.teochew_char.localeCompare(b.teochew_char, 'zh');
+      return a.mandarin_char.localeCompare(b.mandarin_char, 'zh');
     });
   }, [bookmarks, filterCategory, sortBy]);
 

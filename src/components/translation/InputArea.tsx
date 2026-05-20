@@ -16,16 +16,16 @@ export function InputArea({ value, onChangeText, onClear, maxLength = 200 }: Inp
   return (
     <View
       style={{
-        backgroundColor: '#F5EDD8',
-        borderWidth: focused ? 2 : 1,
+        backgroundColor: '#FFFFFF',
+        borderWidth: focused ? 1.5 : 1,
         borderColor: focused ? '#C9A84C' : '#D9C9A8',
-        borderRadius: 16,
+        borderRadius: 18,
         padding: 16,
-        shadowColor: '#C9A84C',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: focused ? 0.22 : 0,
-        shadowRadius: 10,
-        elevation: focused ? 2 : 0,
+        shadowColor: focused ? '#C9A84C' : '#000',
+        shadowOffset: { width: 0, height: focused ? 0 : 2 },
+        shadowOpacity: focused ? 0.18 : 0.05,
+        shadowRadius: focused ? 12 : 6,
+        elevation: focused ? 3 : 1,
       }}
     >
       <TextInput
@@ -35,11 +35,12 @@ export function InputArea({ value, onChangeText, onClear, maxLength = 200 }: Inp
           minHeight: 100,
           maxHeight: 160,
           textAlignVertical: 'top',
-          paddingRight: 32,
-          lineHeight: 24,
+          paddingRight: 36,
+          lineHeight: 26,
+          letterSpacing: 0.1,
         }}
         placeholder="พิมพ์คำหรือประโยค..."
-        placeholderTextColor="#B8997A"
+        placeholderTextColor="#C4A882"
         multiline
         maxLength={maxLength}
         value={value}
@@ -56,27 +57,28 @@ export function InputArea({ value, onChangeText, onClear, maxLength = 200 }: Inp
           onPress={onClear}
           style={{
             position: 'absolute',
-            top: 12,
-            right: 12,
-            width: 28,
-            height: 28,
+            top: 14,
+            right: 14,
+            width: 26,
+            height: 26,
             alignItems: 'center',
             justifyContent: 'center',
           }}
           accessibilityLabel="ล้างคำ"
           hitSlop={8}
         >
-          <Ionicons name="close-circle" size={20} color="#B8997A" />
+          <Ionicons name="close-circle" size={20} color="#C4A882" />
         </Pressable>
       )}
 
       <Text
         style={{
           fontSize: 11,
-          color: nearLimit ? '#B5451B' : '#B8997A',
+          color: nearLimit ? '#B5451B' : '#C4A882',
           fontWeight: nearLimit ? '600' : '400',
           textAlign: 'right',
-          marginTop: 8,
+          marginTop: 6,
+          letterSpacing: 0.3,
         }}
       >
         {value.length} / {maxLength}

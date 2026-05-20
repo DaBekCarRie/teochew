@@ -22,8 +22,14 @@ function pickDistractors(targetWord: WordEntry, allWords: WordEntry[], count: nu
 function toChoice(word: WordEntry, questionType: QuestionType, isCorrect: boolean): QuizChoice {
   return {
     wordId: word.id,
-    label: questionType === 'teochew_to_thai' ? word.thai_meaning : word.teochew_char,
-    sublabel: questionType === 'thai_to_teochew' ? word.teochew_pengim : undefined,
+    label:
+      questionType === 'teochew_to_thai'
+        ? word.thai_meaning
+        : (word.teochew_char ?? word.mandarin_char),
+    sublabel:
+      questionType === 'thai_to_teochew'
+        ? (word.teochew_pengim ?? word.mandarin_pinyin)
+        : undefined,
     isCorrect,
   };
 }

@@ -61,14 +61,8 @@ export default function TabLayout() {
           tabBarIcon: tabIcon('compass', 'compass-outline'),
         }}
       />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          href: null,
-          title: 'โปรไฟล์',
-          tabBarIcon: tabIcon('person', 'person-outline'),
-        }}
-      />
+      <Tabs.Screen name="culture/[id]" options={{ href: null }} />
+      <Tabs.Screen name="profile" options={{ href: null }} />
 
       {/* Hidden tabs that we still want to route to but not show in the bottom bar */}
       <Tabs.Screen

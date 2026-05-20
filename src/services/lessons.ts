@@ -1,5 +1,17 @@
 import type { Lesson, WordEntry } from '../types/dictionary';
-import { MOCK_WORDS } from './supabase/mockWords';
+import { supabase } from './supabase/client';
+
+const WORD_SELECT =
+  'id, teochew_char, teochew_pengim, thai_meaning, english_meaning, mandarin_char, mandarin_pinyin, category, verified, teochew_audio';
+
+/** Fetch lesson words from Supabase, preserving the lesson's word order. */
+export async function fetchLessonWords(wordIds: string[]): Promise<WordEntry[]> {
+  if (wordIds.length === 0) return [];
+  const { data, error } = await supabase.from('words').select(WORD_SELECT).in('id', wordIds);
+  if (error || !data) return [];
+  const map = new Map((data as WordEntry[]).map((w) => [w.id, w]));
+  return wordIds.map((id) => map.get(id)).filter(Boolean) as WordEntry[];
+}
 
 // ─── Family Connection Flow ───────────────────────────────────────────────────
 // NOTE: pengim and audio are placeholders — requires linguist review before
@@ -9,6 +21,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   // ทักทาย
   {
     id: 'family-01',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '好無',
     teochew_pengim: 'hó bô',
     thai_meaning: 'สบายดีไหม',
@@ -17,6 +31,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-02',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '食飯未',
     teochew_pengim: 'zia̍h bng bue',
     thai_meaning: 'กินข้าวหรือยัง',
@@ -25,6 +41,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-03',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '今日按怎',
     teochew_pengim: 'kin-ji̍t án-zuáinn',
     thai_meaning: 'วันนี้เป็นยังไงบ้าง',
@@ -33,6 +51,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-04',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '天氣熱',
     teochew_pengim: 'tinn-khì jua̍h',
     thai_meaning: 'อากาศร้อนนะ',
@@ -42,6 +62,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   // ถามสารทุกข์
   {
     id: 'family-05',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '睏有好無',
     teochew_pengim: 'khùn ū hó bô',
     thai_meaning: 'นอนหลับได้ไหม',
@@ -50,6 +72,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-06',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '有痛佗位',
     teochew_pengim: 'ū thiànn tó-ūi',
     thai_meaning: 'ปวดที่ไหนไหม',
@@ -58,6 +82,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-07',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '飢無',
     teochew_pengim: 'ki bô',
     thai_meaning: 'หิวข้าวไหม',
@@ -66,6 +92,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-08',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '愛保重',
     teochew_pengim: 'ài pó-tiōng',
     thai_meaning: 'ดูแลตัวด้วยนะ',
@@ -75,6 +103,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   // บอกรัก / ใกล้ชิด
   {
     id: 'family-09',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '我愛汝',
     teochew_pengim: 'ua ài lṳ',
     thai_meaning: 'รักคุณนะ',
@@ -83,6 +113,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-10',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '我上想汝',
     teochew_pengim: 'ua siōng siūnn lṳ',
     thai_meaning: 'คิดถึงมากเลย',
@@ -91,6 +123,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-11',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '汝真重要',
     teochew_pengim: 'lṳ tsin tiōng-iàu',
     thai_meaning: 'คุณสำคัญมากสำหรับฉัน',
@@ -99,6 +133,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-12',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '多謝',
     teochew_pengim: 'tō-sia',
     thai_meaning: 'ขอบคุณนะ',
@@ -108,6 +144,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   // ประจำวัน
   {
     id: 'family-13',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '轉來了',
     teochew_pengim: 'tńg lâi liáu',
     thai_meaning: 'กลับบ้านแล้ว',
@@ -116,6 +154,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-14',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '去做工',
     teochew_pengim: 'khì zoh-kang',
     thai_meaning: 'ไปทำงาน',
@@ -124,6 +164,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-15',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '好食無',
     teochew_pengim: 'hó-zia̍h bô',
     thai_meaning: 'อร่อยไหม',
@@ -132,6 +174,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-16',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '無關係',
     teochew_pengim: 'bô-kuan-hē',
     thai_meaning: 'ไม่เป็นไร',
@@ -140,6 +184,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-17',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '愛細膩',
     teochew_pengim: 'ài sè-jī',
     thai_meaning: 'ระวังด้วยนะ',
@@ -148,6 +194,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-18',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '慢來',
     teochew_pengim: 'bān lâi',
     thai_meaning: 'เดี๋ยวมาหานะ',
@@ -156,6 +204,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-19',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '有閒打電話',
     teochew_pengim: 'ū-îng phah tiān-uē',
     thai_meaning: 'โทรมาบ้างนะ',
@@ -164,6 +214,8 @@ export const FAMILY_PHRASE_WORDS: WordEntry[] = [
   },
   {
     id: 'family-20',
+    mandarin_char: '',
+    mandarin_pinyin: '',
     teochew_char: '我上愛汝',
     teochew_pengim: 'ua siōng ài lṳ',
     thai_meaning: 'ฉันรักคุณที่สุด',
@@ -177,8 +229,29 @@ export const FAMILY_LESSON: Lesson = {
   title: 'คุยกับปู่ย่า',
   subtitle: '20 ประโยคพูดได้เลยวันนี้',
   icon: 'heart-outline',
-  sort_order: 0, // แสดงก่อน lesson อื่นทุกอัน
-  word_ids: FAMILY_PHRASE_WORDS.map((w) => w.id),
+  sort_order: 0,
+  word_ids: [
+    '40000001-0000-0000-0000-000000000000',
+    '40000002-0000-0000-0000-000000000000',
+    '40000003-0000-0000-0000-000000000000',
+    '40000004-0000-0000-0000-000000000000',
+    '40000005-0000-0000-0000-000000000000',
+    '40000006-0000-0000-0000-000000000000',
+    '40000007-0000-0000-0000-000000000000',
+    '40000008-0000-0000-0000-000000000000',
+    '40000009-0000-0000-0000-000000000000',
+    '40000010-0000-0000-0000-000000000000',
+    '40000011-0000-0000-0000-000000000000',
+    '40000012-0000-0000-0000-000000000000',
+    '40000013-0000-0000-0000-000000000000',
+    '40000014-0000-0000-0000-000000000000',
+    '40000015-0000-0000-0000-000000000000',
+    '40000016-0000-0000-0000-000000000000',
+    '40000017-0000-0000-0000-000000000000',
+    '40000018-0000-0000-0000-000000000000',
+    '40000019-0000-0000-0000-000000000000',
+    '40000020-0000-0000-0000-000000000000',
+  ],
 };
 
 /** Returns family phrase WordEntry objects (self-contained, no Supabase lookup needed). */
@@ -186,7 +259,6 @@ export function getFamilyPhraseWords(): WordEntry[] {
   return FAMILY_PHRASE_WORDS;
 }
 
-// Static lesson definitions (mirror the Supabase seed)
 export const LESSONS: Lesson[] = [
   {
     id: 'lesson-greetings',
@@ -195,16 +267,16 @@ export const LESSONS: Lesson[] = [
     icon: 'hand-left-outline',
     sort_order: 1,
     word_ids: [
-      'mock-010',
-      'mock-020',
-      'mock-011',
-      'mock-012',
-      'mock-013',
-      'mock-014',
-      'mock-003',
-      'mock-017',
-      'mock-018',
-      'mock-019',
+      '10000010-0000-0000-0000-000000000000',
+      '10000020-0000-0000-0000-000000000000',
+      '10000011-0000-0000-0000-000000000000',
+      '10000012-0000-0000-0000-000000000000',
+      '10000013-0000-0000-0000-000000000000',
+      '10000014-0000-0000-0000-000000000000',
+      '10000003-0000-0000-0000-000000000000',
+      '10000017-0000-0000-0000-000000000000',
+      '10000018-0000-0000-0000-000000000000',
+      '10000019-0000-0000-0000-000000000000',
     ],
   },
   {
@@ -214,14 +286,14 @@ export const LESSONS: Lesson[] = [
     icon: 'people-outline',
     sort_order: 2,
     word_ids: [
-      'mock-008',
-      'mock-009',
-      'mock-003',
-      'mock-010',
-      'mock-011',
-      'mock-012',
-      'mock-013',
-      'mock-014',
+      '10000008-0000-0000-0000-000000000000',
+      '10000009-0000-0000-0000-000000000000',
+      '10000003-0000-0000-0000-000000000000',
+      '10000010-0000-0000-0000-000000000000',
+      '10000011-0000-0000-0000-000000000000',
+      '10000012-0000-0000-0000-000000000000',
+      '10000013-0000-0000-0000-000000000000',
+      '10000014-0000-0000-0000-000000000000',
     ],
   },
   {
@@ -231,15 +303,15 @@ export const LESSONS: Lesson[] = [
     icon: 'restaurant-outline',
     sort_order: 3,
     word_ids: [
-      'mock-004',
-      'mock-005',
-      'mock-006',
-      'mock-007',
-      'mock-019',
-      'mock-002',
-      'mock-010',
-      'mock-015',
-      'mock-016',
+      '10000004-0000-0000-0000-000000000000',
+      '10000005-0000-0000-0000-000000000000',
+      '10000006-0000-0000-0000-000000000000',
+      '10000007-0000-0000-0000-000000000000',
+      '10000019-0000-0000-0000-000000000000',
+      '10000002-0000-0000-0000-000000000000',
+      '10000010-0000-0000-0000-000000000000',
+      '10000015-0000-0000-0000-000000000000',
+      '10000016-0000-0000-0000-000000000000',
     ],
   },
   {
@@ -249,18 +321,18 @@ export const LESSONS: Lesson[] = [
     icon: 'restaurant-outline',
     sort_order: 4,
     word_ids: [
-      'mock-food-01',
-      'mock-food-02',
-      'mock-food-03',
-      'mock-food-04',
-      'mock-food-05',
-      'mock-food-06',
-      'mock-food-07',
-      'mock-food-08',
-      'mock-food-09',
-      'mock-food-10',
-      'mock-food-11',
-      'mock-food-12',
+      '20000001-0000-0000-0000-000000000000',
+      '20000002-0000-0000-0000-000000000000',
+      '20000003-0000-0000-0000-000000000000',
+      '20000004-0000-0000-0000-000000000000',
+      '20000005-0000-0000-0000-000000000000',
+      '20000006-0000-0000-0000-000000000000',
+      '20000007-0000-0000-0000-000000000000',
+      '20000008-0000-0000-0000-000000000000',
+      '20000009-0000-0000-0000-000000000000',
+      '20000010-0000-0000-0000-000000000000',
+      '20000011-0000-0000-0000-000000000000',
+      '20000012-0000-0000-0000-000000000000',
     ],
   },
   {
@@ -270,23 +342,30 @@ export const LESSONS: Lesson[] = [
     icon: 'color-palette-outline',
     sort_order: 5,
     word_ids: [
-      'mock-color-01',
-      'mock-color-02',
-      'mock-color-03',
-      'mock-color-04',
-      'mock-color-05',
-      'mock-color-06',
-      'mock-color-07',
-      'mock-color-08',
-      'mock-color-09',
-      'mock-color-10',
+      '30000001-0000-0000-0000-000000000000',
+      '30000002-0000-0000-0000-000000000000',
+      '30000003-0000-0000-0000-000000000000',
+      '30000004-0000-0000-0000-000000000000',
+      '30000005-0000-0000-0000-000000000000',
+      '30000006-0000-0000-0000-000000000000',
+      '30000007-0000-0000-0000-000000000000',
+      '30000008-0000-0000-0000-000000000000',
+      '30000009-0000-0000-0000-000000000000',
+      '30000010-0000-0000-0000-000000000000',
     ],
   },
 ];
 
-/** Returns the WordEntry objects for a given lesson (from mock data in dev). */
-export function getLessonWords(lesson: Lesson) {
-  return lesson.word_ids
-    .map((id) => MOCK_WORDS.find((w) => w.id === id))
-    .filter(Boolean) as (typeof MOCK_WORDS)[number][];
+export async function fetchLessons(): Promise<Lesson[]> {
+  const { data, error } = await supabase
+    .from('lessons')
+    .select('id, title, subtitle, icon, sort_order, word_ids')
+    .order('sort_order');
+  if (error || !data || data.length === 0) return [FAMILY_LESSON, ...LESSONS];
+  return data as Lesson[];
+}
+
+/** @deprecated Use fetchLessonWords instead. */
+export async function getLessonWords(lesson: Lesson): Promise<WordEntry[]> {
+  return fetchLessonWords(lesson.word_ids);
 }

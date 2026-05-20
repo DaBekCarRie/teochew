@@ -6,16 +6,15 @@ import { useFocusEffect } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 
 import type {
+  Lang,
   TranslationResult,
   TranslationScreenState,
   ErrorType,
-  InputLang,
 } from '../../../types/translation';
 import {
   translateInput,
   NetworkError,
-  RateLimitGoogleError,
-  RateLimitClaudeError,
+  RateLimitError,
 } from '../../../services/translation/pipeline';
 import { useTranslationStore } from '../../../stores/translationStore';
 
@@ -38,7 +37,8 @@ export default function TranslationScreen() {
   const { addEntry, pendingResult, setPendingResult, hydrate, hydrated } = useTranslationStore();
 
   const [inputText, setInputText] = useState('');
-  const [selectedLang, setSelectedLang] = useState<InputLang>('th');
+  const [sourceLang, setSourceLang] = useState<Lang>('th');
+  const [targetLang, setTargetLang] = useState<Lang>('zh');
   const [screenState, setScreenState] = useState<TranslationScreenState>('idle');
   const [result, setResult] = useState<TranslationResult | null>(null);
   const [errorType, setErrorType] = useState<ErrorType>(null);
@@ -54,7 +54,8 @@ export default function TranslationScreen() {
       if (pendingResult) {
         setResult(pendingResult);
         setInputText(pendingResult.input_text);
-        setSelectedLang(pendingResult.detected_lang);
+        setSourceLang(pendingResult.source_lang);
+        setTargetLang(pendingResult.target_lang);
         setScreenState('success');
         setPendingResult(null);
       }
@@ -71,26 +72,21 @@ export default function TranslationScreen() {
     setErrorType(null);
 
     try {
-      const res = await translateInput(trimmed, selectedLang);
+      const res = await translateInput(trimmed, sourceLang, targetLang);
       setResult(res);
       setScreenState('success');
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
       await addEntry({
         id: generateId(),
-        input_text: trimmed,
-        detected_lang: selectedLang,
-        result: res,
         translated_at: new Date().toISOString(),
+        result: res,
       });
     } catch (e) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      if (e instanceof RateLimitClaudeError) {
-        setScreenState('rate_limited');
-        setErrorType('rate_limit_claude');
-      } else if (e instanceof RateLimitGoogleError) {
+      if (e instanceof RateLimitError) {
         setScreenState('error');
-        setErrorType('rate_limit_google');
+        setErrorType('rate_limit');
       } else if (e instanceof NetworkError) {
         setScreenState('error');
         setErrorType('network');
@@ -99,6 +95,11 @@ export default function TranslationScreen() {
         setErrorType('unknown');
       }
     }
+  }
+
+  function handleSwap() {
+    setSourceLang(targetLang);
+    setTargetLang(sourceLang);
   }
 
   function handleClear() {
@@ -143,7 +144,13 @@ export default function TranslationScreen() {
             elevation: 2,
           }}
         >
-          <LanguageSelectorRow selectedLang={selectedLang} onSelectLang={setSelectedLang} />
+          <LanguageSelectorRow
+            sourceLang={sourceLang}
+            targetLang={targetLang}
+            onSelectSource={setSourceLang}
+            onSelectTarget={setTargetLang}
+            onSwap={handleSwap}
+          />
           <InputArea
             value={inputText}
             onChangeText={setInputText}
@@ -163,7 +170,7 @@ export default function TranslationScreen() {
           {screenState === 'success' && result && (
             <ResultCard result={result} onCopied={handleCopied} />
           )}
-          {(screenState === 'error' || screenState === 'rate_limited') && (
+          {screenState === 'error' && (
             <TranslationErrorState errorType={errorType} onRetry={handleTranslate} />
           )}
         </View>

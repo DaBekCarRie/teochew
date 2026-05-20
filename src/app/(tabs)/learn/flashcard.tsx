@@ -16,8 +16,7 @@ import { FetchErrorState } from '../../../components/flashcard/FetchErrorState';
 import { useFlashcardDeck } from '../../../hooks/useFlashcardDeck';
 import { useCardFlip } from '../../../hooks/useCardFlip';
 import { useFlashcardGesture } from '../../../hooks/useFlashcardGesture';
-import { MOCK_WORDS } from '../../../services/supabase/mockWords';
-import { FAMILY_PHRASE_WORDS } from '../../../services/lessons';
+import { fetchLessonWords } from '../../../services/lessons';
 import { useProgressStore } from '../../../stores/progressStore';
 
 export default function FlashcardScreen() {
@@ -113,11 +112,7 @@ export default function FlashcardScreen() {
     const idStr = wordIdsParam || unknownWordIdsParam;
     if (idStr) {
       const ids = idStr.split(',').filter(Boolean);
-      const allWords = [...MOCK_WORDS, ...FAMILY_PHRASE_WORDS];
-      const filtered = ids
-        .map((id) => allWords.find((w) => w.id === id))
-        .filter(Boolean) as typeof MOCK_WORDS;
-      loadDeck(null, filtered);
+      fetchLessonWords(ids).then((words) => loadDeck(null, words));
     } else {
       loadDeck(category);
     }

@@ -1,18 +1,20 @@
 import type { TranslationResult } from '../types/translation';
 
+const LANG_NAME: Record<string, string> = {
+  th: 'ไทย',
+  zh: 'จีนกลาง',
+  en: 'English',
+};
+
 export function buildCopyText(result: TranslationResult): string {
-  const parts = [
-    result.thai_meaning ? `ไทย: ${result.thai_meaning}` : null,
-    result.mandarin_char ? `จีนกลาง: ${result.mandarin_char}` : null,
-    result.english_meaning ? `English: ${result.english_meaning}` : null,
-  ].filter(Boolean);
-  return parts.join(' · ');
+  return result.output_text;
 }
 
 export function buildShareMessage(result: TranslationResult): string {
-  return `🇹🇭 ไทย: ${result.thai_meaning ?? '—'}
-🇨🇳 จีนกลาง: ${result.mandarin_char ?? '—'}
-🇬🇧 English: ${result.english_meaning ?? '—'}
+  const srcName = LANG_NAME[result.source_lang] ?? result.source_lang;
+  const tgtName = LANG_NAME[result.target_lang] ?? result.target_lang;
+  return `${srcName}: ${result.input_text}
+${tgtName}: ${result.output_text}
 
 แปลด้วย Teochew App`;
 }

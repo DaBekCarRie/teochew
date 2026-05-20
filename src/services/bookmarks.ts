@@ -29,6 +29,8 @@ export async function addBookmark(
     teochew_pengim: entry.teochew_pengim,
     thai_meaning: entry.thai_meaning,
     english_meaning: entry.english_meaning,
+    mandarin_char: entry.mandarin_char,
+    mandarin_pinyin: entry.mandarin_pinyin,
     category: entry.category,
     bookmarked_at: restoredAt ?? new Date().toISOString(),
   };

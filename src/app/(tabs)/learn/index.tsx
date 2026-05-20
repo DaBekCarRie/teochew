@@ -1,20 +1,21 @@
-import React, { useEffect } from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-
 import { Ionicons } from '@expo/vector-icons';
 import { LessonCard } from '../../../components/lesson/LessonCard';
-import { FAMILY_LESSON, LESSONS } from '../../../services/lessons';
+import { FAMILY_LESSON, LESSONS, fetchLessons } from '../../../services/lessons';
 import { useLessonStore } from '../../../stores/lessonStore';
-import type { LessonState } from '../../../types/dictionary';
+import type { Lesson, LessonState } from '../../../types/dictionary';
 
 export default function LearnScreen() {
   const router = useRouter();
   const { getProgress, hydrate } = useLessonStore();
+  const [lessons, setLessons] = useState<Lesson[]>([FAMILY_LESSON, ...LESSONS]);
 
   useEffect(() => {
     hydrate();
+    fetchLessons().then(setLessons);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function getLessonState(lessonId: string): LessonState {
@@ -25,103 +26,245 @@ export default function LearnScreen() {
   }
 
   function handleLessonPress(lessonId: string) {
-    router.push({
-      pathname: '/learn/lesson/[lessonId]',
-      params: { lessonId },
-    });
+    router.push({ pathname: '/learn/lesson/[lessonId]', params: { lessonId } });
   }
 
+  const completedCount = lessons.filter((l) => getLessonState(l.id) === 'completed').length;
+  const inProgressCount = lessons.filter((l) => getLessonState(l.id) === 'in_progress').length;
+  const wordsLearned = lessons
+    .filter((l) => getLessonState(l.id) === 'completed')
+    .reduce((sum, l) => sum + l.word_ids.length, 0);
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FAF6EE' }}>
+    <SafeAreaView style={styles.screen}>
       {/* Header */}
-      <View
-        style={{
-          paddingHorizontal: 20,
-          paddingTop: 8,
-          paddingBottom: 16,
-          backgroundColor: '#FAF6EE',
-          borderBottomWidth: 1,
-          borderBottomColor: '#D9C9A8',
-        }}
-      >
-        <Text style={{ fontSize: 24, fontWeight: '700', color: '#2C1A0E' }}>เรียนรู้</Text>
-        <Text style={{ fontSize: 14, color: '#A08060', marginTop: 2 }}>
-          เรียนคำศัพท์แต้จิ๋วเป็นบทเรียน
-        </Text>
+      <View style={styles.header}>
+        <View style={styles.headerContent}>
+          <Text style={styles.headerEmoji}>🎓</Text>
+          <View>
+            <Text style={styles.headerTitle}>เรียนรู้</Text>
+            <Text style={styles.headerSub}>Learn Teochew</Text>
+          </View>
+        </View>
+        <View style={styles.headerRule} />
       </View>
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 }}
+        contentContainerStyle={{ paddingBottom: 48 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Tone diagram entry point */}
-        <Pressable
-          onPress={() => router.push('/learn/tones')}
-          style={({ pressed }) => ({
-            backgroundColor: '#F5EDD8',
-            borderWidth: 1.5,
-            borderColor: '#C9A84C',
-            borderRadius: 14,
-            padding: 14,
-            marginBottom: 20,
-            flexDirection: 'row',
-            alignItems: 'center',
-            opacity: pressed ? 0.85 : 1,
-          })}
-          accessibilityRole="button"
-          accessibilityLabel="ระบบเสียงแต้จิ๋ว 8 วรรณยุกต์"
-        >
-          <Ionicons name="musical-notes-outline" size={24} color="#C9A84C" />
-          <View style={{ flex: 1, marginLeft: 12 }}>
-            <Text style={{ fontSize: 15, fontWeight: '700', color: '#2C1A0E' }}>
-              ระบบเสียงแต้จิ๋ว
-            </Text>
-            <Text style={{ fontSize: 13, color: '#A08060', marginTop: 2 }}>
-              8 วรรณยุกต์ พร้อม pitch diagram
-            </Text>
+        {/* Progress summary card */}
+        <View style={styles.progressCard}>
+          <View style={styles.progressStat}>
+            <Text style={styles.progressNum}>{completedCount}</Text>
+            <Text style={styles.progressLabel}>สำเร็จแล้ว</Text>
           </View>
-          <Ionicons name="chevron-forward" size={16} color="#A08060" />
-        </Pressable>
+          <View style={styles.progressDivider} />
+          <View style={styles.progressStat}>
+            <Text style={styles.progressNum}>{inProgressCount}</Text>
+            <Text style={styles.progressLabel}>กำลังเรียน</Text>
+          </View>
+          <View style={styles.progressDivider} />
+          <View style={styles.progressStat}>
+            <Text style={styles.progressNum}>{wordsLearned}</Text>
+            <Text style={styles.progressLabel}>คำที่เรียนแล้ว</Text>
+          </View>
+        </View>
 
-        <Text
-          style={{
-            fontSize: 11,
-            fontWeight: '600',
-            color: '#A08060',
-            letterSpacing: 1.2,
-            textTransform: 'uppercase',
-            marginBottom: 12,
-          }}
-        >
-          บทเรียนทั้งหมด
-        </Text>
+        {/* Tone system entry — wrapper pattern avoids New Architecture Pressable bug */}
+        <View style={styles.toneCardOuter}>
+          <Pressable
+            onPress={() => router.push('/learn/tones')}
+            style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
+            accessibilityRole="button"
+            accessibilityLabel="ระบบเสียงแต้จิ๋ว 8 วรรณยุกต์"
+          >
+            <View style={styles.toneCard}>
+              <View style={styles.toneIconCircle}>
+                <Ionicons name="musical-notes" size={22} color="#C9A84C" />
+              </View>
+              <View style={styles.toneTextBlock}>
+                <Text style={styles.toneTitle}>ระบบเสียงแต้จิ๋ว</Text>
+                <Text style={styles.toneSub}>8 วรรณยุกต์ พร้อม pitch diagram</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color="#A08060" />
+            </View>
+          </Pressable>
+        </View>
 
-        {/* Family phrases lesson — always unlocked, no XP */}
-        <LessonCard
-          key={FAMILY_LESSON.id}
-          lesson={FAMILY_LESSON}
-          state="unlocked"
-          progress={getProgress(FAMILY_LESSON.id)}
-          onPress={() => handleLessonPress(FAMILY_LESSON.id)}
-          onLockedPress={() => {}}
-        />
+        {/* Section header */}
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionAccent} />
+          <Text style={styles.sectionTitle}>บทเรียนทั้งหมด</Text>
+          <Text style={styles.sectionCount}>{lessons.length} บทเรียน</Text>
+        </View>
 
-        {LESSONS.map((lesson) => {
-          const state = getLessonState(lesson.id);
-          const progress = getProgress(lesson.id);
-          return (
-            <LessonCard
-              key={lesson.id}
-              lesson={lesson}
-              state={state}
-              progress={progress}
-              onPress={() => handleLessonPress(lesson.id)}
-              onLockedPress={() => {}}
-            />
-          );
-        })}
+        {/* Lesson cards */}
+        <View style={styles.lessonList}>
+          {lessons.map((lesson) => {
+            const state = getLessonState(lesson.id);
+            return (
+              <LessonCard
+                key={lesson.id}
+                lesson={lesson}
+                state={state}
+                progress={getProgress(lesson.id)}
+                onPress={() => handleLessonPress(lesson.id)}
+                onLockedPress={() => {}}
+              />
+            );
+          })}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: '#FAF6EE',
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 0,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingBottom: 14,
+  },
+  headerEmoji: {
+    fontSize: 28,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#2C1A0E',
+    fontFamily: 'Sarabun',
+    lineHeight: 26,
+  },
+  headerSub: {
+    fontSize: 13,
+    color: '#A08060',
+    fontFamily: 'Sarabun',
+    letterSpacing: 0.5,
+  },
+  headerRule: {
+    height: 1,
+    backgroundColor: '#EDE0C4',
+  },
+  progressCard: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    marginTop: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    paddingVertical: 18,
+    shadowColor: '#2C1A0E',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  progressStat: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 4,
+  },
+  progressNum: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#2C1A0E',
+    lineHeight: 30,
+  },
+  progressLabel: {
+    fontSize: 11,
+    color: '#A08060',
+    fontFamily: 'Sarabun',
+    textAlign: 'center',
+  },
+  progressDivider: {
+    width: 1,
+    backgroundColor: '#EDE0C4',
+    marginVertical: 6,
+  },
+  toneCardOuter: {
+    marginHorizontal: 20,
+    marginTop: 14,
+  },
+  toneCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFDF5',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderWidth: 1.5,
+    borderColor: '#C9A84C',
+    gap: 12,
+    shadowColor: '#2C1A0E',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  toneIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FEF6E0',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  toneTextBlock: {
+    flex: 1,
+    gap: 2,
+  },
+  toneTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#2C1A0E',
+    fontFamily: 'Sarabun',
+  },
+  toneSub: {
+    fontSize: 12,
+    color: '#A08060',
+    fontFamily: 'Sarabun',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 12,
+  },
+  sectionAccent: {
+    width: 4,
+    height: 18,
+    backgroundColor: '#C9A84C',
+    borderRadius: 2,
+  },
+  sectionTitle: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#2C1A0E',
+    fontFamily: 'Sarabun',
+    letterSpacing: 0.3,
+  },
+  sectionCount: {
+    fontSize: 12,
+    color: '#A08060',
+    fontFamily: 'Sarabun',
+  },
+  lessonList: {
+    paddingHorizontal: 20,
+    gap: 10,
+  },
+});

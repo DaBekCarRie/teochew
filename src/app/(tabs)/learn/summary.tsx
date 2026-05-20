@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -36,7 +36,6 @@ export default function SummaryScreen() {
   const { setFlashcardDone } = useLessonStore();
   const { awardXP } = useXPStore();
 
-  // Mark flashcard as done for this lesson and award XP (not for family lesson)
   useEffect(() => {
     if (lessonId) {
       setFlashcardDone(lessonId);
@@ -55,8 +54,14 @@ export default function SummaryScreen() {
   const knownPct = total > 0 ? Math.round((knownCount / total) * 100) : 0;
   const unknownPct = total > 0 ? Math.round((unknownCount / total) * 100) : 0;
 
-  const title =
-    knownPct >= 80 ? 'เก่งมาก! 🎉' : knownPct >= 50 ? 'ทำได้ดี!' : 'ไม่เป็นไร ลองอีกครั้ง!';
+  const isExcellent = knownPct >= 80;
+  const isGood = knownPct >= 50;
+
+  const heroEmoji = isExcellent ? '🎉' : isGood ? '👍' : '💪';
+  const heroTitle = isExcellent ? 'เก่งมาก!' : isGood ? 'ทำได้ดี!' : 'ไม่เป็นไร ลองอีกครั้ง!';
+  const heroSub = isExcellent ? `คุณจำได้ครบ ${knownCount} คำแล้ว` : `คุณฝึกครบ ${total} คำแล้ว`;
+
+  const accentColor = isExcellent ? '#4A7C59' : isGood ? '#C9A84C' : '#B5451B';
 
   function handleRetryUnknown() {
     router.replace({
@@ -76,133 +81,307 @@ export default function SummaryScreen() {
   function handleStartQuiz() {
     router.push({
       pathname: '/learn/quiz',
-      params: {
-        deckTitle,
-        category: category ?? '',
-        lessonId,
-        wordIds,
-      },
+      params: { deckTitle, category: category ?? '', lessonId, wordIds },
     });
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-cream-50">
+    <SafeAreaView style={styles.screen}>
       <RewardQueue />
+
       {/* Header */}
-      <View className="h-14 px-5 flex-row items-center justify-between">
-        <Text className="text-xl font-semibold text-brown-900">สรุปการฝึก</Text>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>สรุปการฝึก</Text>
         <Pressable
-          className="w-11 h-11 items-center justify-center"
           onPress={handleGoBack}
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel="ปิด"
+          style={styles.closeBtn}
         >
           <Ionicons name="close" size={20} color="#A08060" />
         </Pressable>
       </View>
 
       <ScrollView
-        className="flex-1 px-5"
-        contentContainerStyle={{ paddingBottom: 40, alignItems: 'center' }}
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Illustration / emoji */}
-        <View className="mt-8 mb-4">
-          <Text style={{ fontSize: 64 }}>
-            {knownPct >= 80 ? '🎉' : knownPct >= 50 ? '👍' : '💪'}
-          </Text>
+        {/* Hero */}
+        <View style={[styles.heroBanner, { backgroundColor: `${accentColor}12` }]}>
+          <Text style={styles.heroEmoji}>{heroEmoji}</Text>
+          <Text style={[styles.heroTitle, { color: accentColor }]}>{heroTitle}</Text>
+          <Text style={styles.heroSub}>{heroSub}</Text>
         </View>
 
-        <Text className="text-2xl font-bold text-brown-900 text-center">{title}</Text>
-        <Text className="text-base text-brown-400 mt-2 text-center">คุณฝึกครบ {total} คำแล้ว</Text>
-
-        {/* Summary card */}
-        <View
-          className="bg-cream-100 border border-cream-300 rounded-[14px] p-5 mt-6 w-full"
-          accessibilityLabel={`จำได้ ${knownCount} คำ ต้องทบทวน ${unknownCount} คำ`}
-        >
-          {/* Ring / percentage display */}
-          <View className="items-center mb-4">
-            <View
-              className="w-20 h-20 rounded-full items-center justify-center border-8"
-              style={{ borderColor: '#C9A84C', backgroundColor: '#FAF6EE' }}
-            >
-              <Text className="text-xl font-bold text-brown-900">{knownPct}%</Text>
-            </View>
+        {/* Score ring card */}
+        <View style={styles.scoreCard}>
+          <View style={[styles.scoreRing, { borderColor: accentColor }]}>
+            <Text style={[styles.scoreNum, { color: accentColor }]}>{knownPct}%</Text>
           </View>
 
-          <View style={{ gap: 12 }}>
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center gap-2">
-                <Ionicons name="checkmark-circle" size={16} color="#4A7C59" />
-                <Text className="text-sm text-brown-900">จำได้</Text>
+          <View style={styles.statsList}>
+            <View style={styles.statsRow}>
+              <View style={styles.statsLeft}>
+                <Ionicons name="checkmark-circle" size={18} color="#4A7C59" />
+                <Text style={styles.statsLabel}>จำได้</Text>
               </View>
-              <Text className="text-sm font-semibold text-brown-900">
-                {knownCount} คำ{' '}
-                <Text className="text-xs font-normal text-brown-400">({knownPct}%)</Text>
+              <Text style={styles.statsValue}>
+                {knownCount} คำ <Text style={styles.statsPct}>({knownPct}%)</Text>
               </Text>
             </View>
 
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center gap-2">
-                <Ionicons name="close-circle" size={16} color="#B5451B" />
-                <Text className="text-sm text-brown-900">ต้องทบทวน</Text>
+            <View style={styles.statsDivider} />
+
+            <View style={styles.statsRow}>
+              <View style={styles.statsLeft}>
+                <Ionicons name="close-circle" size={18} color="#B5451B" />
+                <Text style={styles.statsLabel}>ต้องทบทวน</Text>
               </View>
-              <Text className="text-sm font-semibold text-brown-900">
-                {unknownCount} คำ{' '}
-                <Text className="text-xs font-normal text-brown-400">({unknownPct}%)</Text>
+              <Text style={styles.statsValue}>
+                {unknownCount} คำ <Text style={styles.statsPct}>({unknownPct}%)</Text>
               </Text>
             </View>
 
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center gap-2">
-                <Ionicons name="time-outline" size={16} color="#4A6FA5" />
-                <Text className="text-sm text-brown-900">เวลาเฉลี่ย</Text>
+            <View style={styles.statsDivider} />
+
+            <View style={styles.statsRow}>
+              <View style={styles.statsLeft}>
+                <Ionicons name="time-outline" size={18} color="#4A6FA5" />
+                <Text style={styles.statsLabel}>เวลาเฉลี่ย</Text>
               </View>
-              <Text className="text-sm font-semibold text-brown-900">{avgSec} วินาที/คำ</Text>
+              <Text style={styles.statsValue}>{avgSec} วินาที/คำ</Text>
             </View>
           </View>
         </View>
 
-        {/* CTAs */}
-        <View className="w-full mt-6" style={{ gap: 12 }}>
-          {unknownCount > 0 ? (
+        {/* CTA section */}
+        <View style={styles.ctaSection}>
+          {unknownCount === 0 ? (
+            <View style={styles.perfectBadge}>
+              <Ionicons name="star" size={16} color="#4A7C59" />
+              <Text style={styles.perfectText}>ยอดเยี่ยม! คุณจำได้ทุกคำ</Text>
+            </View>
+          ) : (
             <Pressable
-              className="bg-brick-600 py-3 px-6 rounded-[10px] items-center min-h-[48px]"
-              style={({ pressed }) => [pressed && { opacity: 0.8 }]}
               onPress={handleRetryUnknown}
+              style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
               accessibilityRole="button"
             >
-              <Text className="text-base font-semibold text-cream-50">
-                ทบทวนคำที่จำไม่ได้อีกครั้ง ({unknownCount})
-              </Text>
+              <View style={styles.btnRetry}>
+                <Ionicons name="refresh" size={18} color="#FAF6EE" />
+                <Text style={styles.btnRetryText}>ทบทวนคำที่จำไม่ได้ ({unknownCount} คำ)</Text>
+              </View>
             </Pressable>
-          ) : (
-            <Text className="text-base font-semibold text-center py-3" style={{ color: '#4A7C59' }}>
-              ยอดเยี่ยม! คุณจำได้ทุกคำ
-            </Text>
           )}
 
           <Pressable
-            className="bg-gold-500 py-3 px-6 rounded-[10px] items-center min-h-[48px]"
-            style={({ pressed }) => [pressed && { opacity: 0.8 }]}
             onPress={handleStartQuiz}
+            style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
             accessibilityRole="button"
           >
-            <Text className="text-base font-semibold text-cream-50">ทำ Quiz ต่อเลย! 🧠</Text>
+            <View style={styles.btnQuiz}>
+              <Ionicons name="trophy-outline" size={18} color="#2C1A0E" />
+              <Text style={styles.btnQuizText}>ทำ Quiz ต่อเลย! 🧠</Text>
+            </View>
           </Pressable>
 
           <Pressable
-            className="border-[1.5px] border-gold-500 py-3 px-6 rounded-[10px] items-center min-h-[48px]"
-            style={({ pressed }) => [pressed && { opacity: 0.8 }]}
             onPress={handleGoBack}
+            style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
             accessibilityRole="button"
           >
-            <Text className="text-base font-semibold text-gold-700">กลับหน้าเรียนรู้</Text>
+            <View style={styles.btnBack}>
+              <Text style={styles.btnBackText}>กลับหน้าเรียนรู้</Text>
+            </View>
           </Pressable>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: '#FAF6EE',
+  },
+  header: {
+    height: 56,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#EDE0C4',
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#2C1A0E',
+    fontFamily: 'Sarabun',
+  },
+  closeBtn: {
+    position: 'absolute',
+    right: 12,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 48,
+    gap: 16,
+  },
+  heroBanner: {
+    borderRadius: 20,
+    paddingVertical: 24,
+    alignItems: 'center',
+    gap: 6,
+  },
+  heroEmoji: {
+    fontSize: 56,
+    lineHeight: 64,
+  },
+  heroTitle: {
+    fontSize: 26,
+    fontWeight: '900',
+    fontFamily: 'Sarabun',
+    letterSpacing: 0.2,
+  },
+  heroSub: {
+    fontSize: 14,
+    color: '#6B4C2A',
+    fontFamily: 'Sarabun',
+  },
+  scoreCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    gap: 20,
+    shadowColor: '#2C1A0E',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  scoreRing: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    borderWidth: 8,
+    backgroundColor: '#FDFAF5',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scoreNum: {
+    fontSize: 24,
+    fontWeight: '900',
+    lineHeight: 28,
+  },
+  statsList: {
+    width: '100%',
+    gap: 0,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+  },
+  statsLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  statsLabel: {
+    fontSize: 14,
+    color: '#2C1A0E',
+    fontFamily: 'Sarabun',
+  },
+  statsValue: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#2C1A0E',
+    fontFamily: 'Sarabun',
+  },
+  statsPct: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#A08060',
+  },
+  statsDivider: {
+    height: 1,
+    backgroundColor: '#F0E8D8',
+  },
+  ctaSection: {
+    gap: 10,
+  },
+  perfectBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 14,
+    backgroundColor: '#E8F5EE',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#C4DECE',
+  },
+  perfectText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#4A7C59',
+    fontFamily: 'Sarabun',
+  },
+  btnRetry: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#B5451B',
+    paddingVertical: 16,
+    borderRadius: 14,
+  },
+  btnRetryText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FAF6EE',
+    fontFamily: 'Sarabun',
+  },
+  btnQuiz: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#C9A84C',
+    paddingVertical: 16,
+    borderRadius: 14,
+  },
+  btnQuizText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#2C1A0E',
+    fontFamily: 'Sarabun',
+  },
+  btnBack: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#C9A84C',
+  },
+  btnBackText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#C9A84C',
+    fontFamily: 'Sarabun',
+  },
+});

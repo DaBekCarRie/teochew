@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import type { ErrorType } from '../../types/translation';
 
 interface ErrorConfig {
@@ -16,17 +16,11 @@ const ERROR_MAP: Record<NonNullable<ErrorType>, ErrorConfig> = {
     subtitle: 'กรุณาตรวจสอบการเชื่อมต่อแล้วลองใหม่',
     showRetry: true,
   },
-  rate_limit_google: {
+  rate_limit: {
     icon: '⏱',
     title: 'เกินจำนวนการแปลในขณะนี้',
     subtitle: 'กรุณารอสักครู่แล้วลองใหม่',
     showRetry: true,
-  },
-  rate_limit_claude: {
-    icon: '🤖',
-    title: 'ใช้การแปล AI ครบ 20 ครั้งแล้ววันนี้',
-    subtitle: 'จะรีเซ็ตอีกครั้งตอนเที่ยงคืน',
-    showRetry: false,
   },
   unknown: {
     icon: '⚠️',
@@ -72,23 +66,37 @@ export function TranslationErrorState({ errorType, onRetry }: TranslationErrorSt
         {config.subtitle}
       </Text>
       {config.showRetry && (
-        <Pressable
-          onPress={onRetry}
-          style={({ pressed }) => ({
-            marginTop: 16,
-            borderWidth: 1,
-            borderColor: '#B5451B',
-            borderRadius: 10,
-            paddingHorizontal: 20,
-            paddingVertical: 10,
-            opacity: pressed ? 0.7 : 1,
-          })}
-          accessibilityLabel="ลองใหม่อีกครั้ง"
-          accessibilityRole="button"
-        >
-          <Text style={{ fontSize: 14, fontWeight: '500', color: '#B5451B' }}>ลองใหม่</Text>
-        </Pressable>
+        <View style={styles.retryWrap}>
+          <Pressable
+            onPress={onRetry}
+            style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+            accessibilityLabel="ลองใหม่อีกครั้ง"
+            accessibilityRole="button"
+          >
+            <View style={styles.retryBtn}>
+              <Text style={styles.retryText}>ลองใหม่</Text>
+            </View>
+          </Pressable>
+        </View>
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  retryWrap: {
+    marginTop: 16,
+  },
+  retryBtn: {
+    borderWidth: 1,
+    borderColor: '#B5451B',
+    borderRadius: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  retryText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#B5451B',
+  },
+});

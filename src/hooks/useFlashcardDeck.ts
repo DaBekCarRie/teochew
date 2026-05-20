@@ -1,9 +1,6 @@
 import { useState, useCallback } from 'react';
 import { getFlashcardWords } from '../services/supabase/words';
-import { MOCK_WORDS } from '../services/supabase/mockWords';
 import type { WordEntry, FlashcardItem, FlashcardResult } from '../types/dictionary';
-
-const USE_MOCK = false;
 
 type DeckStatus = 'idle' | 'loading' | 'ready' | 'empty' | 'error' | 'complete';
 
@@ -49,10 +46,6 @@ export function useFlashcardDeck(): UseFlashcardDeckReturn {
       let fetched: WordEntry[];
       if (words && words.length > 0) {
         fetched = words;
-      } else if (USE_MOCK) {
-        fetched = category
-          ? MOCK_WORDS.filter((w) => w.category === category && w.verified)
-          : MOCK_WORDS.filter((w) => w.verified);
       } else {
         fetched = await getFlashcardWords(category, 30);
       }

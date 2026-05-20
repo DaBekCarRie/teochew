@@ -5,6 +5,8 @@ import type { WordEntry } from '../types/dictionary';
 
 const mockWord: WordEntry = {
   id: 'word-001',
+  mandarin_char: '水',
+  mandarin_pinyin: 'shuǐ',
   teochew_char: '水',
   teochew_pengim: 'zui2',
   thai_meaning: 'น้ำ',
@@ -15,6 +17,8 @@ const mockWord: WordEntry = {
 
 const mockWord2: WordEntry = {
   id: 'word-002',
+  mandarin_char: '火',
+  mandarin_pinyin: 'huǒ',
   teochew_char: '火',
   teochew_pengim: 'hue2',
   thai_meaning: 'ไฟ',

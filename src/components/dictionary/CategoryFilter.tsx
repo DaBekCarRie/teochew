@@ -9,17 +9,17 @@ export interface Category {
 
 export const CATEGORIES: Category[] = [
   { value: null, label: 'ทั้งหมด', icon: '📚' },
-  { value: 'กริยา', label: 'กริยา', icon: '🏃' },
-  { value: 'อาหาร', label: 'อาหาร', icon: '🍜' },
-  { value: 'ครอบครัว', label: 'ครอบครัว', icon: '👨‍👩‍👧' },
-  { value: 'ร่างกาย', label: 'ร่างกาย', icon: '🫀' },
-  { value: 'ตัวเลข', label: 'ตัวเลข', icon: '🔢' },
+  { value: 'การเคลื่อนไหวและกริยา', label: 'กริยา', icon: '🏃' },
+  { value: 'อาหารและเครื่องดื่ม', label: 'อาหาร', icon: '🍜' },
+  { value: 'ครอบครัวและความสัมพันธ์', label: 'ครอบครัว', icon: '👨‍👩‍👧' },
+  { value: 'ร่างกายมนุษย์', label: 'ร่างกาย', icon: '🫀' },
+  { value: 'ตัวเลขและปริมาณ', label: 'ตัวเลข', icon: '🔢' },
   { value: 'สัตว์', label: 'สัตว์', icon: '🐾' },
-  { value: 'ธรรมชาติ', label: 'ธรรมชาติ', icon: '🌿' },
-  { value: 'อารมณ์', label: 'อารมณ์', icon: '😊' },
-  { value: 'เวลา', label: 'เวลา', icon: '⏰' },
-  { value: 'คำคุณศัพท์', label: 'คุณศัพท์', icon: '✨' },
-  { value: 'เครื่องดื่ม', label: 'เครื่องดื่ม', icon: '🥤' },
+  { value: 'ธรรมชาติและสิ่งแวดล้อม', label: 'ธรรมชาติ', icon: '🌿' },
+  { value: 'จิตวิทยาและอารมณ์', label: 'อารมณ์', icon: '😊' },
+  { value: 'เวลาและวันที่', label: 'เวลา', icon: '⏰' },
+  { value: 'คำคุณศัพท์บุคลิกภาพ', label: 'คุณศัพท์', icon: '✨' },
+  { value: 'ทั่วไป', label: 'ทั่วไป', icon: '💬' },
 ];
 
 interface CategoryFilterProps {

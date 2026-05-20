@@ -109,14 +109,24 @@ export function WordResultCard({
         },
       ]}
     >
-      {/* ROW 1: teochew_char + verified + bookmark */}
+      {/* ROW 1: mandarin_char (hero) + verified + bookmark */}
       <View className="flex-row items-center justify-between">
-        <HighlightText
-          text={entry.teochew_char}
-          query={query}
-          textClassName="text-[28px] font-bold text-brown-900"
-          highlightClassName="bg-gold-200 text-gold-700 font-semibold"
-        />
+        <View className="flex-1 flex-col">
+          <HighlightText
+            text={entry.mandarin_char ?? entry.thai_meaning ?? ''}
+            query={query}
+            textClassName="text-[28px] font-bold text-brown-900"
+            highlightClassName="bg-gold-200 text-gold-700 font-semibold"
+          />
+          {entry.mandarin_pinyin ? (
+            <HighlightText
+              text={entry.mandarin_pinyin}
+              query={query}
+              textClassName="text-[15px] italic text-gold-500"
+              highlightClassName="bg-gold-200 text-gold-700 font-semibold"
+            />
+          ) : null}
+        </View>
         <View className="flex-row items-center gap-1">
           {entry.verified && <VerifiedBadge />}
           <InlineAudioButton

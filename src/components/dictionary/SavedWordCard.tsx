@@ -97,7 +97,7 @@ export function SavedWordCard({
         },
       ]}
     >
-      {/* ROW 1: checkbox (edit) + teochew_char + bookmark */}
+      {/* ROW 1: checkbox (edit) + mandarin_char (hero) + bookmark */}
       <View className="flex-row items-center justify-between">
         {isEditMode && (
           <Pressable
@@ -113,7 +113,14 @@ export function SavedWordCard({
             {isSelected && <Ionicons name="checkmark" size={12} color="#FAF6EE" />}
           </Pressable>
         )}
-        <Text className="flex-1 text-[28px] font-bold text-brown-900">{item.teochew_char}</Text>
+        <View className="flex-1 flex-col">
+          <Text className="text-[28px] font-bold text-brown-900">
+            {item.mandarin_char ?? item.thai_meaning ?? ''}
+          </Text>
+          {item.mandarin_pinyin ? (
+            <Text className="text-[15px] italic text-gold-500">{item.mandarin_pinyin}</Text>
+          ) : null}
+        </View>
         {!isEditMode && (
           <BookmarkButton wordId={item.id} isBookmarked onToggle={() => onRemove(item.id)} />
         )}

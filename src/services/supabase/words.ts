@@ -11,12 +11,12 @@ export async function searchWords(query: string, category?: string | null): Prom
     .from('words')
     .select(WORD_SELECT)
     .or(
-      `teochew_char.ilike.${pattern},` +
-        `teochew_pengim.ilike.${pattern},` +
+      `mandarin_char.ilike.${pattern},` +
+        `mandarin_pinyin.ilike.${pattern},` +
         `thai_meaning.ilike.${pattern},` +
         `english_meaning.ilike.${pattern},` +
-        `mandarin_char.ilike.${pattern},` +
-        `mandarin_pinyin.ilike.${pattern}`,
+        `teochew_char.ilike.${pattern},` +
+        `teochew_pengim.ilike.${pattern}`,
     )
     .eq('verified', true);
 
@@ -47,7 +47,7 @@ export async function getCategoryWords(
     .from('words')
     .select(WORD_SELECT)
     .eq('verified', true)
-    .order('teochew_pengim')
+    .order('mandarin_pinyin')
     .range(offset, offset + PAGE_SIZE - 1);
 
   if (category) q = q.eq('category', category);
@@ -75,7 +75,7 @@ export async function getWordDetail(wordId: string): Promise<WordDetail | null> 
     .select(
       `id, teochew_char, teochew_pengim, thai_meaning, english_meaning,
        mandarin_char, mandarin_pinyin, category, verified, notes, teochew_audio,
-       word_usage_examples (teochew_char, teochew_pengim, thai_meaning, english_meaning, sort_order)`,
+       word_usage_examples (teochew_char, teochew_pengim, thai_meaning, english_meaning, mandarin_meaning, sort_order)`,
     )
     .eq('id', wordId)
     .single();

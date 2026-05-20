@@ -66,9 +66,6 @@ export function BadgeEarnedModal({ conditionKey, onDismiss }: BadgeEarnedModalPr
 
   function handleViewCollection() {
     handleDismiss();
-    setTimeout(() => {
-      router.push('/culture/badges');
-    }, 200);
   }
 
   if (!badgeDef) return null;

@@ -14,6 +14,8 @@ const mockNetInfo = NetInfo.fetch as jest.MockedFunction<typeof NetInfo.fetch>;
 const mockResults: WordEntry[] = [
   {
     id: 'word-001',
+    mandarin_char: '水',
+    mandarin_pinyin: 'shuǐ',
     teochew_char: '水',
     teochew_pengim: 'zui2',
     thai_meaning: 'น้ำ',

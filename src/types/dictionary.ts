@@ -1,12 +1,12 @@
 export interface WordEntry {
   id: string;
-  teochew_char: string;
-  teochew_pengim: string;
+  mandarin_char: string;
+  mandarin_pinyin: string;
   thai_meaning: string;
-  english_meaning: string;
-  mandarin_char?: string;
-  mandarin_pinyin?: string;
   category?: string;
+  english_meaning: string;
+  teochew_char?: string;
+  teochew_pengim?: string;
   verified: boolean;
   teochew_audio?: string | null;
 }
@@ -142,11 +142,13 @@ export interface ReminderSettings {
 
 export interface BookmarkItem {
   id: string; // word_id
-  teochew_char: string;
-  teochew_pengim: string;
+  mandarin_char: string;
+  mandarin_pinyin: string;
   thai_meaning: string;
-  english_meaning: string;
   category?: string;
+  english_meaning: string;
+  teochew_char?: string;
+  teochew_pengim?: string;
   bookmarked_at: string; // ISO 8601
 }
 

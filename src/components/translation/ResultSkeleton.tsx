@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Animated } from 'react-native';
+import { View, Animated, StyleSheet } from 'react-native';
 
 function ShimmerBar({
   width,
@@ -24,13 +24,7 @@ function ShimmerBar({
   return (
     <Animated.View
       style={[
-        {
-          width,
-          height,
-          borderRadius: height / 2,
-          backgroundColor: '#D9C9A8',
-          opacity: anim,
-        },
+        { width, height, borderRadius: height / 2, backgroundColor: '#D9C9A8', opacity: anim },
         style,
       ]}
     />
@@ -39,54 +33,74 @@ function ShimmerBar({
 
 export function ResultSkeleton() {
   return (
-    <View
-      style={{
-        borderWidth: 1,
-        borderColor: '#D9C9A8',
-        borderRadius: 20,
-        overflow: 'hidden',
-        marginTop: 8,
-      }}
-    >
-      {/* Hero shimmer */}
-      <View
-        style={{
-          backgroundColor: '#EDE0C4',
-          alignItems: 'center',
-          paddingTop: 28,
-          paddingBottom: 24,
-          gap: 14,
-        }}
-      >
-        <ShimmerBar
-          width={116}
-          height={116}
-          style={{ borderRadius: 58, backgroundColor: '#C9B48A' }}
-        />
-        <ShimmerBar width={120} height={22} />
-      </View>
+    <View style={styles.card}>
+      <View style={styles.accentBar} />
 
-      {/* Meanings shimmer */}
-      <View
-        style={{
-          backgroundColor: '#F5EDD8',
-          paddingHorizontal: 20,
-          paddingTop: 16,
-          paddingBottom: 20,
-          gap: 12,
-        }}
-      >
-        <ShimmerBar width={180} height={18} />
-        <ShimmerBar width={150} height={18} />
-        <ShimmerBar width={200} height={18} />
+      <View style={styles.body}>
+        {/* Source shimmer */}
+        <View style={styles.shimmerRow}>
+          <ShimmerBar width={24} height={24} style={{ borderRadius: 12 }} />
+          <ShimmerBar width={140} height={16} />
+        </View>
 
-        <View style={{ height: 1, backgroundColor: '#D9C9A8', marginTop: 4, marginBottom: 4 }} />
+        <View style={styles.divider} />
 
-        <View style={{ flexDirection: 'row', gap: 10 }}>
-          <ShimmerBar width={'48%' as `${number}%`} height={48} style={{ borderRadius: 10 }} />
-          <ShimmerBar width={'48%' as `${number}%`} height={48} style={{ borderRadius: 10 }} />
+        {/* Output shimmer */}
+        <View style={styles.shimmerRow}>
+          <ShimmerBar width={24} height={24} style={{ borderRadius: 12 }} />
+          <View style={{ flex: 1, gap: 8 }}>
+            <ShimmerBar width={'80%' as `${number}%`} height={22} />
+            <ShimmerBar width={'55%' as `${number}%`} height={22} />
+          </View>
+        </View>
+
+        <View style={styles.divider} />
+
+        {/* Action row shimmer */}
+        <View style={styles.actionRow}>
+          <ShimmerBar width={'48%' as `${number}%`} height={46} style={{ borderRadius: 10 }} />
+          <ShimmerBar width={'48%' as `${number}%`} height={46} style={{ borderRadius: 10 }} />
         </View>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    borderWidth: 1,
+    borderColor: '#D9C9A8',
+    borderRadius: 22,
+    overflow: 'hidden',
+    shadowColor: '#6B4C2A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 2,
+    backgroundColor: '#FAF6EE',
+  },
+  accentBar: {
+    height: 5,
+    backgroundColor: '#C9A84C',
+    opacity: 0.4,
+  },
+  body: {
+    paddingHorizontal: 20,
+    paddingTop: 18,
+    paddingBottom: 20,
+    gap: 14,
+  },
+  shimmerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#EDE0C4',
+  },
+  actionRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+});

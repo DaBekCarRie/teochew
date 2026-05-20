@@ -12,6 +12,8 @@ const STORAGE_KEY = '@teochew/bookmarks';
 
 const mockWord: WordEntry = {
   id: 'word-001',
+  mandarin_char: '水',
+  mandarin_pinyin: 'shuǐ',
   teochew_char: '水',
   teochew_pengim: 'zui2',
   thai_meaning: 'น้ำ',
@@ -22,6 +24,8 @@ const mockWord: WordEntry = {
 
 const mockBookmark: BookmarkItem = {
   id: 'word-001',
+  mandarin_char: '水',
+  mandarin_pinyin: 'shuǐ',
   teochew_char: '水',
   teochew_pengim: 'zui2',
   thai_meaning: 'น้ำ',

@@ -71,12 +71,12 @@ export async function searchCachedWords(
     .filter((w) => {
       if (category && w.category !== category) return false;
       const fields = [
-        w.teochew_char,
-        w.teochew_pengim,
-        w.thai_meaning,
-        w.english_meaning,
         w.mandarin_char,
         w.mandarin_pinyin,
+        w.thai_meaning,
+        w.english_meaning,
+        w.teochew_char,
+        w.teochew_pengim,
       ];
       return fields.some((val) => typeof val === 'string' && val.toLowerCase().includes(q));
     })

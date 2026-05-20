@@ -1,44 +1,19 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated } from 'react-native';
+import { View, Text, Animated, StyleSheet } from 'react-native';
 import type { TranslationResult } from '../../types/translation';
 import { CopyButton } from './CopyButton';
 import { ShareButton } from './ShareButton';
-import { useUserStore } from '../../stores/userStore';
+
+const LANG_FLAG: Record<string, string> = { th: '🇹🇭', zh: '🇨🇳', en: '🇬🇧' };
 
 interface ResultCardProps {
   result: TranslationResult;
   onCopied: () => void;
 }
 
-interface MeaningRowProps {
-  flag: string;
-  text: string;
-  accessibilityLabel: string;
-}
-
-function MeaningRow({ flag, text, accessibilityLabel }: MeaningRowProps) {
-  return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-        paddingVertical: 8,
-      }}
-      accessibilityLabel={accessibilityLabel}
-    >
-      <Text style={{ fontSize: 20 }}>{flag}</Text>
-      <Text style={{ fontSize: 16, color: '#2C1A0E', flex: 1, lineHeight: 24, fontWeight: '500' }}>
-        {text}
-      </Text>
-    </View>
-  );
-}
-
 export function ResultCard({ result, onCopied }: ResultCardProps) {
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(16)).current;
-  const { language } = useUserStore();
 
   useEffect(() => {
     Animated.parallel([
@@ -52,76 +27,37 @@ export function ResultCard({ result, onCopied }: ResultCardProps) {
     ]).start();
   }, [opacity, translateY]);
 
-  const hasMeanings = result.thai_meaning || result.mandarin_char || result.english_meaning;
-
-  const thaiNode = result.thai_meaning ? (
-    <MeaningRow
-      key="th"
-      flag="🇹🇭"
-      text={result.thai_meaning}
-      accessibilityLabel={`ภาษาไทย: ${result.thai_meaning}`}
-    />
-  ) : null;
-
-  const zhNode = result.mandarin_char ? (
-    <MeaningRow
-      key="zh"
-      flag="🇨🇳"
-      text={result.mandarin_char}
-      accessibilityLabel={`จีนกลาง: ${result.mandarin_char}`}
-    />
-  ) : null;
-
-  const enNode = result.english_meaning ? (
-    <MeaningRow
-      key="en"
-      flag="🇬🇧"
-      text={result.english_meaning}
-      accessibilityLabel={`English: ${result.english_meaning}`}
-    />
-  ) : null;
-
-  const orderedNodes: (React.ReactNode | null)[] = [];
-  if (language === 'th') {
-    orderedNodes.push(thaiNode, enNode, zhNode);
-  } else if (language === 'en') {
-    orderedNodes.push(enNode, thaiNode, zhNode);
-  } else {
-    orderedNodes.push(zhNode, thaiNode, enNode);
-  }
+  const sourceFlag = LANG_FLAG[result.source_lang] ?? '';
+  const targetFlag = LANG_FLAG[result.target_lang] ?? '';
 
   return (
-    <Animated.View
-      style={{
-        borderRadius: 22,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: '#D9C9A8',
-        shadowColor: '#6B4C2A',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
-        elevation: 3,
-        opacity,
-        transform: [{ translateY }],
-        backgroundColor: '#FAF6EE',
-      }}
-    >
-      <View style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 20 }}>
-        {hasMeanings && (
-          <>
-            <View style={{ marginBottom: 4 }}>{orderedNodes}</View>
-            <View
-              style={{ height: 1, backgroundColor: '#EDE0C4', marginTop: 4, marginBottom: 16 }}
-            />
-          </>
-        )}
+    <Animated.View style={[styles.card, { opacity, transform: [{ translateY }] }]}>
+      {/* Gold accent bar */}
+      <View style={styles.accentBar} />
 
-        {!hasMeanings && (
-          <View style={{ height: 1, backgroundColor: '#EDE0C4', marginBottom: 16 }} />
-        )}
+      <View style={styles.body}>
+        {/* Source section */}
+        <View style={styles.sourceRow}>
+          <Text style={styles.sourceFlag}>{sourceFlag}</Text>
+          <Text style={styles.sourceText} numberOfLines={3}>
+            {result.input_text}
+          </Text>
+        </View>
 
-        <View style={{ flexDirection: 'row', gap: 10 }}>
+        <View style={styles.divider} />
+
+        {/* Output section */}
+        <View style={styles.outputRow}>
+          <Text style={styles.outputFlag}>{targetFlag}</Text>
+          <Text style={styles.outputText} numberOfLines={4}>
+            {result.output_text}
+          </Text>
+        </View>
+
+        <View style={styles.dividerLight} />
+
+        {/* Actions */}
+        <View style={styles.actionRow}>
           <CopyButton result={result} onCopied={onCopied} flex={1} />
           <ShareButton result={result} flex={1} />
         </View>
@@ -129,3 +65,73 @@ export function ResultCard({ result, onCopied }: ResultCardProps) {
     </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    borderRadius: 22,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#D9C9A8',
+    shadowColor: '#6B4C2A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 3,
+    backgroundColor: '#FAF6EE',
+  },
+  accentBar: {
+    height: 5,
+    backgroundColor: '#C9A84C',
+  },
+  body: {
+    paddingHorizontal: 20,
+    paddingTop: 18,
+    paddingBottom: 20,
+    gap: 14,
+  },
+  sourceRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  sourceFlag: {
+    fontSize: 20,
+    marginTop: 2,
+  },
+  sourceText: {
+    flex: 1,
+    fontSize: 15,
+    color: '#A08060',
+    lineHeight: 22,
+    fontFamily: 'Sarabun',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#EDE0C4',
+  },
+  outputRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  outputFlag: {
+    fontSize: 22,
+    marginTop: 2,
+  },
+  outputText: {
+    flex: 1,
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#2C1A0E',
+    lineHeight: 32,
+    fontFamily: 'Sarabun',
+  },
+  dividerLight: {
+    height: 1,
+    backgroundColor: '#EDE0C4',
+  },
+  actionRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+});

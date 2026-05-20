@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { WordOfDay } from '../../stores/cultureStore';
 import { createAudioPlayer } from 'expo-audio';
@@ -7,160 +7,92 @@ import { usePlaybackSpeed } from '../../hooks/usePlaybackSpeed';
 import * as Haptics from 'expo-haptics';
 
 export function WordOfDayCard({ wordOfDay }: { wordOfDay: WordOfDay }) {
-  const { word, date } = wordOfDay;
+  const { word } = wordOfDay;
   const playbackSpeed = usePlaybackSpeed();
   const [isBookmarked, setIsBookmarked] = useState(false);
-
-  // Format date to Thai
-  const d = new Date(date);
-  const thaiDate = d.toLocaleDateString('th-TH', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'short',
-  });
+  const [isPlaying, setIsPlaying] = useState(false);
 
   function handlePlayTTS() {
     try {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      // Fallback TTS audio URL if word doesn't have one
       const uri =
         word.teochew_audio || 'https://cdn.pixabay.com/audio/2022/03/15/audio_2910d655f2.mp3';
       const player = createAudioPlayer({ uri });
       player.setPlaybackRate(playbackSpeed, 'high');
       player.play();
-
+      setIsPlaying(true);
       player.addListener('playbackStatusUpdate', (status) => {
         if (status.didJustFinish) {
           try {
             player.remove();
           } catch {}
+          setIsPlaying(false);
         }
       });
     } catch (e) {
       console.log('TTS failed', e);
+      setIsPlaying(false);
     }
   }
 
   function handleBookmark() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    setIsBookmarked(true);
-    // In a real app we'd save this to a bookmark store
+    setIsBookmarked((v) => !v);
   }
 
   return (
-    <View style={{ marginHorizontal: 20, marginTop: 16, marginBottom: 8 }}>
-      <View
-        style={{
-          backgroundColor: '#F5EDD9',
-          borderRadius: 18,
-          padding: 20,
-          borderWidth: 1,
-          borderColor: '#EAD9B8',
-        }}
-      >
-        {/* Header label */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-          <Text style={{ fontSize: 16 }}>🏮</Text>
-          <Text
-            style={{
-              fontSize: 12,
-              fontWeight: '600',
-              color: '#9A7A2E',
-              textTransform: 'uppercase',
-              fontFamily: 'Sarabun',
-            }}
-          >
-            คำประจำวัน
-          </Text>
-          <Text style={{ fontSize: 12, color: '#9E7B6B' }}>·</Text>
-          <Text style={{ fontSize: 12, color: '#9E7B6B', fontFamily: 'Sarabun' }}>{thaiDate}</Text>
+    <View style={styles.card}>
+      {/* Badge */}
+      <View style={styles.badge}>
+        <View style={styles.badgeDot} />
+        <Text style={styles.badgeText}>คำประจำวัน</Text>
+      </View>
+
+      {/* Main row */}
+      <View style={styles.mainRow}>
+        <View style={styles.charBlock}>
+          <Text style={styles.character}>{word.teochew_char}</Text>
+          <Text style={styles.pengim}>{word.teochew_pengim}</Text>
         </View>
 
-        {/* Teochew */}
-        <Text
-          style={{
-            fontSize: 44,
-            fontWeight: 'bold',
-            color: '#2C1A0E',
-            textAlign: 'center',
-            marginTop: 8,
-            marginBottom: 4,
-          }}
-        >
-          {word.teochew_char}
-        </Text>
-        <Text
-          style={{
-            fontSize: 20,
-            fontStyle: 'italic',
-            color: '#B8860B',
-            textAlign: 'center',
-            marginBottom: 16,
-          }}
-        >
-          {word.teochew_pengim}
-        </Text>
-
-        {/* Meanings */}
-        <View style={{ flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', gap: 16 }}>
-          {word.thai_meaning && <MeaningChip flag="🇹🇭" text={word.thai_meaning} />}
-          {word.mandarin_char && <MeaningChip flag="🇨🇳" text={word.mandarin_char} />}
-          {word.english_meaning && <MeaningChip flag="🇬🇧" text={word.english_meaning} />}
+        <View style={styles.meaningsBlock}>
+          {word.thai_meaning && <Text style={styles.thaiMeaning}>{word.thai_meaning}</Text>}
+          {word.english_meaning && (
+            <Text style={styles.englishMeaning}>{word.english_meaning}</Text>
+          )}
         </View>
+      </View>
 
-        {/* Actions */}
-        <View
-          style={{
-            flexDirection: 'row',
-            gap: 12,
-            marginTop: 16,
-            paddingTop: 16,
-            borderTopWidth: 1,
-            borderTopColor: '#EAD9B8',
-          }}
-        >
+      {/* Actions — NA-safe wrapper pattern */}
+      <View style={styles.actions}>
+        <View style={styles.btnPlayWrap}>
           <Pressable
             onPress={handlePlayTTS}
-            style={({ pressed }) => ({
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              backgroundColor: '#EAD9B8',
-              borderRadius: 10,
-              paddingVertical: 10,
-              opacity: pressed ? 0.7 : 1,
-            })}
+            style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
           >
-            <Ionicons name="volume-medium" size={16} color="#7C4B35" />
-            <Text style={{ fontSize: 14, color: '#2C1A0E', fontFamily: 'Sarabun' }}>ฟังเสียง</Text>
+            <View style={styles.btnPlay}>
+              <Ionicons
+                name={isPlaying ? 'volume-high' : 'volume-medium-outline'}
+                size={16}
+                color="#FFFFFF"
+              />
+              <Text style={styles.btnPlayText}>{isPlaying ? 'กำลังเล่น…' : 'ฟัง'}</Text>
+            </View>
           </Pressable>
+        </View>
 
+        <View>
           <Pressable
             onPress={handleBookmark}
-            style={({ pressed }) => ({
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              borderWidth: 1,
-              borderColor: '#C9A84C',
-              backgroundColor: isBookmarked ? '#E8D5A3' : 'transparent',
-              borderRadius: 10,
-              paddingVertical: 10,
-              opacity: pressed ? 0.7 : 1,
-            })}
+            style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
           >
-            <Ionicons
-              name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
-              size={16}
-              color="#B8860B"
-            />
-            <Text style={{ fontSize: 14, color: '#B8860B', fontFamily: 'Sarabun' }}>
-              {isBookmarked ? 'เพิ่มแล้ว ✓' : 'เพิ่มคำนี้'}
-            </Text>
+            <View style={[styles.btnBookmark, isBookmarked && styles.btnBookmarkActive]}>
+              <Ionicons
+                name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
+                size={18}
+                color={isBookmarked ? '#FFFFFF' : '#C9A84C'}
+              />
+            </View>
           </Pressable>
         </View>
       </View>
@@ -168,13 +100,125 @@ export function WordOfDayCard({ wordOfDay }: { wordOfDay: WordOfDay }) {
   );
 }
 
-function MeaningChip({ flag, text }: { flag: string; text: string }) {
-  return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-      <Text style={{ fontSize: 18 }}>{flag}</Text>
-      <Text style={{ fontSize: 15, fontWeight: '500', color: '#2C1A0E', fontFamily: 'Sarabun' }}>
-        {text}
-      </Text>
-    </View>
-  );
-}
+const styles = StyleSheet.create({
+  card: {
+    marginHorizontal: 20,
+    marginTop: 12,
+    marginBottom: 8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    overflow: 'hidden',
+    shadowColor: '#2C1A0E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.09,
+    shadowRadius: 12,
+    elevation: 5,
+    padding: 16,
+    gap: 14,
+  },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    alignSelf: 'flex-start',
+    backgroundColor: '#FEF0EB',
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  badgeDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#B5451B',
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#B5451B',
+    fontFamily: 'Sarabun',
+  },
+  mainRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  charBlock: {
+    width: 96,
+    backgroundColor: '#FAF6EE',
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#EDE0C4',
+    flexShrink: 0,
+    paddingVertical: 14,
+    gap: 4,
+  },
+  character: {
+    fontSize: 52,
+    fontWeight: '800',
+    color: '#2C1A0E',
+    lineHeight: 58,
+    textAlign: 'center',
+  },
+  pengim: {
+    fontSize: 13,
+    fontStyle: 'italic',
+    fontWeight: '600',
+    color: '#C9A84C',
+    textAlign: 'center',
+  },
+  meaningsBlock: {
+    flex: 1,
+    gap: 3,
+  },
+  thaiMeaning: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#2C1A0E',
+    fontFamily: 'Sarabun',
+    lineHeight: 34,
+  },
+  englishMeaning: {
+    fontSize: 14,
+    color: '#A08060',
+    fontFamily: 'Sarabun',
+  },
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  btnPlayWrap: {
+    flex: 1,
+  },
+  btnPlay: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+    backgroundColor: '#B5451B',
+    borderRadius: 12,
+    paddingVertical: 11,
+  },
+  btnPlayText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    fontFamily: 'Sarabun',
+  },
+  btnBookmark: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#C9A84C',
+  },
+  btnBookmarkActive: {
+    backgroundColor: '#C9A84C',
+    borderColor: '#C9A84C',
+  },
+});

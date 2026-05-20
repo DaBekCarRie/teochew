@@ -13,10 +13,14 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.teochew"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.teochew.app",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "ใช้ไมค์เพื่อฟังการออกเสียงภาษาแต้จิ๋ว"
+      }
     },
     "android": {
+      "package": "com.teochew.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
