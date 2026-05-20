@@ -51,6 +51,14 @@
           "iosDisplayInForeground": true
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {
+        "root": "src/app"
+      },
+      "eas": {
+        "projectId": "e2fad9d7-a672-402e-a66e-b39f4ada47a6"
+      }
+    }
   }
 }
