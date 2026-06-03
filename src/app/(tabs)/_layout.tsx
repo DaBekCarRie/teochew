@@ -10,6 +10,23 @@ function tabIcon(active: IoniconName, inactive: IoniconName) {
   );
 }
 
+// Re-pressing an already-focused tab should return to that tab's list screen
+// (the nested stack's `index`) instead of staying on a pushed detail screen.
+function resetToIndex(tabName: string) {
+  return ({
+    navigation,
+  }: {
+    navigation: { isFocused: () => boolean; navigate: (name: string, params?: object) => void };
+  }) => ({
+    tabPress: (e: { preventDefault: () => void }) => {
+      if (navigation.isFocused()) {
+        e.preventDefault();
+        navigation.navigate(tabName, { screen: 'index' });
+      }
+    },
+  });
+}
+
 export default function TabLayout() {
   const { colors } = useTheme();
 
@@ -39,6 +56,7 @@ export default function TabLayout() {
           title: 'พจนานุกรม',
           tabBarIcon: tabIcon('book', 'book-outline'),
         }}
+        listeners={resetToIndex('dictionary')}
       />
       <Tabs.Screen
         name="learn"
@@ -46,6 +64,7 @@ export default function TabLayout() {
           title: 'เรียนรู้',
           tabBarIcon: tabIcon('school', 'school-outline'),
         }}
+        listeners={resetToIndex('learn')}
       />
       <Tabs.Screen
         name="translate"
@@ -53,6 +72,7 @@ export default function TabLayout() {
           title: 'แปลภาษา',
           tabBarIcon: tabIcon('language', 'language-outline'),
         }}
+        listeners={resetToIndex('translate')}
       />
       <Tabs.Screen
         name="culture"
@@ -60,6 +80,7 @@ export default function TabLayout() {
           title: 'วัฒนธรรม',
           tabBarIcon: tabIcon('compass', 'compass-outline'),
         }}
+        listeners={resetToIndex('culture')}
       />
       <Tabs.Screen name="culture/[id]" options={{ href: null }} />
       <Tabs.Screen
@@ -68,6 +89,7 @@ export default function TabLayout() {
           title: 'โปรไฟล์',
           tabBarIcon: tabIcon('person', 'person-outline'),
         }}
+        listeners={resetToIndex('profile')}
       />
 
       {/* Hidden tabs that we still want to route to but not show in the bottom bar */}
