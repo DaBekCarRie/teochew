@@ -34,7 +34,7 @@ function RightActions({ onRemove }: { onRemove: () => void }) {
   );
 }
 
-export function SavedWordCard({
+export const SavedWordCard = React.memo(function SavedWordCard({
   item,
   isEditMode = false,
   isSelected = false,
@@ -163,4 +163,4 @@ export function SavedWordCard({
       {cardContent}
     </ReanimatedSwipeable>
   );
-}
+});

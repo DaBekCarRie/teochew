@@ -52,7 +52,7 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
   },
   language: 'th',
   playbackSpeed: '1.0',
-  notifEnabled: true,
+  notifEnabled: false,
   notifTime: '08:00',
   recentActivity: [],
   learningIntent: 'general',

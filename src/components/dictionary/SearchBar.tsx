@@ -27,7 +27,7 @@ export function SearchBar({
 
       <TextInput
         className="flex-1 text-base text-brown-900 ml-2"
-        placeholder="ค้นหา... (ไทย / EN / 中文)"
+        placeholder="ค้นหา... (ไทย / Peng'im / EN / 中文)"
         placeholderTextColor="#A08060"
         value={value}
         onChangeText={onChangeText}

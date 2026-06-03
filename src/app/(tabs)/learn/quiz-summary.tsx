@@ -146,7 +146,18 @@ export default function QuizSummaryScreen() {
           justifyContent: 'space-between',
         }}
       >
-        <Text style={{ fontSize: 18, fontWeight: '600', color: '#2C1A0E' }}>สรุปผล Quiz</Text>
+        <View style={{ width: 44 }} />
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: '600',
+            color: '#2C1A0E',
+            flex: 1,
+            textAlign: 'center',
+          }}
+        >
+          สรุปผล Quiz
+        </Text>
         <Pressable
           style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}
           onPress={handleGoBack}
@@ -334,12 +345,17 @@ export default function QuizSummaryScreen() {
               alignItems: 'center',
               minHeight: 52,
               justifyContent: 'center',
+              borderRadius: 10,
+              borderWidth: 1.5,
+              borderColor: '#D9C9A8',
               opacity: pressed ? 0.6 : 1,
             })}
             onPress={handleGoBack}
             accessibilityRole="button"
           >
-            <Text style={{ fontSize: 16, color: '#7A5C38' }}>กลับหน้าเรียนรู้</Text>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: '#7A5C38' }}>
+              กลับหน้าเรียนรู้
+            </Text>
           </Pressable>
         </View>
       </ScrollView>

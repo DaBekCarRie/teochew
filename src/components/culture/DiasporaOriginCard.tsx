@@ -1,10 +1,14 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 export function DiasporaOriginCard() {
+  const router = useRouter();
+
   return (
     <Pressable
+      onPress={() => router.push('/culture/map')}
       style={({ pressed }) => ({ opacity: pressed ? 0.88 : 1 })}
       accessibilityRole="button"
       accessibilityLabel="ที่มาของชาวแต้จิ๋ว"

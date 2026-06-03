@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, FlatList, ScrollView, Pressable, Alert } from 'react-native';
+import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -225,7 +226,7 @@ export default function SavedWordsScreen() {
         </>
       )}
 
-      <FlatList<BookmarkItem>
+      <FlashList<BookmarkItem>
         data={displayedBookmarks}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (

@@ -365,6 +365,22 @@ export async function fetchLessons(): Promise<Lesson[]> {
   return data as Lesson[];
 }
 
+/**
+ * Resolve a lesson's words from its ID alone (e.g. deep link / direct nav where
+ * the caller didn't pass an explicit wordIds list). Falls back to the local
+ * LESSONS / FAMILY_LESSON definitions when the lesson isn't in Supabase.
+ */
+export async function fetchWordsByLessonId(lessonId: string): Promise<WordEntry[]> {
+  if (!lessonId) return [];
+  // Family phrases are self-contained (no Supabase lookup needed).
+  if (lessonId === FAMILY_LESSON.id) return getFamilyPhraseWords();
+
+  const lessons = await fetchLessons();
+  const lesson = lessons.find((l) => l.id === lessonId) ?? LESSONS.find((l) => l.id === lessonId);
+  if (!lesson) return [];
+  return fetchLessonWords(lesson.word_ids);
+}
+
 /** @deprecated Use fetchLessonWords instead. */
 export async function getLessonWords(lesson: Lesson): Promise<WordEntry[]> {
   return fetchLessonWords(lesson.word_ids);

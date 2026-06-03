@@ -30,6 +30,11 @@ export default function VoiceResultScreen() {
   const showWarning = params.showLowConfidenceWarning === 'true';
   const [selectedLang, setSelectedLang] = useState<'th' | 'zh' | 'en'>('th');
 
+  if (!params.resultJson) {
+    router.replace('/voice');
+    return null;
+  }
+
   function handleReRecord() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.back();

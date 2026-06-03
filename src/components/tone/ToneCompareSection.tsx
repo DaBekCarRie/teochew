@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, Modal, FlatList } from 'react-native';
+import { View, Text, Pressable, Modal } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
 import { TONES } from '../../utils/toneData';
 import type { ToneInfo } from '../../utils/toneData';
@@ -84,43 +85,45 @@ function TonePicker({
             >
               เลือกเสียง
             </Text>
-            <FlatList
-              data={TONES}
-              keyExtractor={(item) => String(item.number)}
-              renderItem={({ item }: { item: ToneInfo }) => (
-                <Pressable
-                  onPress={() => {
-                    onSelect(item.number);
-                    setOpen(false);
-                  }}
-                  style={({ pressed }) => ({
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    paddingHorizontal: 14,
-                    paddingVertical: 12,
-                    backgroundColor: pressed ? '#F5EDD8' : 'transparent',
-                    borderTopWidth: 1,
-                    borderTopColor: '#EDE0C4',
-                  })}
-                >
-                  <View
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: 5,
-                      backgroundColor: item.color,
-                      marginRight: 10,
+            <View style={{ height: 320 }}>
+              <FlashList
+                data={TONES}
+                keyExtractor={(item) => String(item.number)}
+                renderItem={({ item }: { item: ToneInfo }) => (
+                  <Pressable
+                    onPress={() => {
+                      onSelect(item.number);
+                      setOpen(false);
                     }}
-                  />
-                  <Text style={{ fontSize: 14, color: '#2C1A0E', flex: 1 }}>
-                    เสียงที่ {item.number} — {item.name_th}
-                  </Text>
-                  {selected === item.number && (
-                    <Ionicons name="checkmark" size={16} color="#C9A84C" />
-                  )}
-                </Pressable>
-              )}
-            />
+                    style={({ pressed }) => ({
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      paddingHorizontal: 14,
+                      paddingVertical: 12,
+                      backgroundColor: pressed ? '#F5EDD8' : 'transparent',
+                      borderTopWidth: 1,
+                      borderTopColor: '#EDE0C4',
+                    })}
+                  >
+                    <View
+                      style={{
+                        width: 10,
+                        height: 10,
+                        borderRadius: 5,
+                        backgroundColor: item.color,
+                        marginRight: 10,
+                      }}
+                    />
+                    <Text style={{ fontSize: 14, color: '#2C1A0E', flex: 1 }}>
+                      เสียงที่ {item.number} — {item.name_th}
+                    </Text>
+                    {selected === item.number && (
+                      <Ionicons name="checkmark" size={16} color="#C9A84C" />
+                    )}
+                  </Pressable>
+                )}
+              />
+            </View>
           </View>
         </Pressable>
       </Modal>

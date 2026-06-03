@@ -56,6 +56,17 @@ const DEV_MAP: Record<string, Record<string, string>> = {
     delicious: 'อร่อย',
     tea: 'ชา',
   },
+  'th|tc': {
+    สวัสดี: 'ทักทาย',
+    ขอบคุณ: 'กัมเซีย',
+    กินข้าว: 'เจียะปึ่ง',
+    น้ำ: 'จุ๊ย',
+  },
+  'tc|th': {
+    กัมเซีย: 'ขอบคุณ',
+    เจียะปึ่ง: 'กินข้าว',
+    จุ๊ย: 'น้ำ',
+  },
 };
 
 async function loadCache(): Promise<CacheStore> {

@@ -18,7 +18,7 @@ interface WordResultCardProps {
   onBookmarkToggle?: (entry: WordEntry) => void;
 }
 
-export function WordResultCard({
+export const WordResultCard = React.memo(function WordResultCard({
   entry,
   query,
   onPress,
@@ -113,14 +113,14 @@ export function WordResultCard({
       <View className="flex-row items-center justify-between">
         <View className="flex-1 flex-col">
           <HighlightText
-            text={entry.mandarin_char ?? entry.thai_meaning ?? ''}
+            text={entry.mandarin_char || entry.teochew_char || entry.thai_meaning || ''}
             query={query}
             textClassName="text-[28px] font-bold text-brown-900"
             highlightClassName="bg-gold-200 text-gold-700 font-semibold"
           />
-          {entry.mandarin_pinyin ? (
+          {(entry.mandarin_char ? entry.mandarin_pinyin : entry.teochew_pengim) ? (
             <HighlightText
-              text={entry.mandarin_pinyin}
+              text={(entry.mandarin_char ? entry.mandarin_pinyin : entry.teochew_pengim) ?? ''}
               query={query}
               textClassName="text-[15px] italic text-gold-500"
               highlightClassName="bg-gold-200 text-gold-700 font-semibold"
@@ -166,4 +166,4 @@ export function WordResultCard({
       )}
     </Pressable>
   );
-}
+});

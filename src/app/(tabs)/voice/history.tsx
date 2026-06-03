@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, Text, Pressable, SafeAreaView, FlatList, Alert, Share } from 'react-native';
+import { View, Text, Pressable, SafeAreaView, Alert, Share } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -94,7 +95,7 @@ export default function VoiceHistoryScreen() {
       {!hydrated ? null : history.length === 0 ? (
         <VoiceHistoryEmptyState onGoRecord={() => router.back()} />
       ) : (
-        <FlatList
+        <FlashList
           data={history}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 12 }}

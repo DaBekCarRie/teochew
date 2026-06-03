@@ -57,14 +57,23 @@ export function useWordSearch(
       }
       setIsOffline(false);
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       try {
-        const data = await searchWords(debouncedQuery.trim(), category);
+        const data = await searchWords(debouncedQuery.trim(), category, controller.signal);
+        clearTimeout(timeoutId);
         if (cancelledRef.current) return;
         setResults(data);
         setStatus(data.length > 0 ? 'success' : 'empty');
       } catch (err) {
+        clearTimeout(timeoutId);
         if (cancelledRef.current) return;
-        setErrorMsg(err instanceof Error ? err.message : 'เกิดข้อผิดพลาด');
+        if (err instanceof Error && err.name === 'AbortError') {
+          setErrorMsg('การเชื่อมต่อใช้เวลานานเกินไป');
+        } else {
+          setErrorMsg(err instanceof Error ? err.message : 'เกิดข้อผิดพลาด');
+        }
         setStatus('error');
       }
     })();

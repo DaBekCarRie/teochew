@@ -36,7 +36,7 @@ export default function LearnScreen() {
     .reduce((sum, l) => sum + l.word_ids.length, 0);
 
   return (
-    <SafeAreaView style={styles.screen}>
+    <SafeAreaView className="flex-1 bg-cream-50">
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
@@ -55,7 +55,7 @@ export default function LearnScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Progress summary card */}
-        <View style={styles.progressCard}>
+        <View className="flex-row mx-5 mt-4 bg-white rounded-[18px] py-[18px] shadow-sm elevation-3 border border-cream-200">
           <View style={styles.progressStat}>
             <Text style={styles.progressNum}>{completedCount}</Text>
             <Text style={styles.progressLabel}>สำเร็จแล้ว</Text>
@@ -123,8 +123,7 @@ export default function LearnScreen() {
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1,
-    backgroundColor: '#FAF6EE',
+    // replaced
   },
   header: {
     paddingHorizontal: 20,
@@ -158,17 +157,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#EDE0C4',
   },
   progressCard: {
-    flexDirection: 'row',
-    marginHorizontal: 20,
-    marginTop: 16,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    paddingVertical: 18,
-    shadowColor: '#2C1A0E',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.07,
-    shadowRadius: 10,
-    elevation: 3,
+    // replaced
   },
   progressStat: {
     flex: 1,

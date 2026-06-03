@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, Pressable, Modal, FlatList, Animated, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Modal, Animated, StyleSheet } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import type { Lang } from '../../types/translation';
@@ -8,6 +9,7 @@ const LANGS: { value: Lang; flag: string; label: string }[] = [
   { value: 'th', flag: '🇹🇭', label: 'ไทย' },
   { value: 'zh', flag: '🇨🇳', label: 'จีนกลาง' },
   { value: 'en', flag: '🇬🇧', label: 'อังกฤษ' },
+  { value: 'tc', flag: '🏮', label: "แต้จิ๋ว (Peng'im)" },
 ];
 
 interface LanguageSelectorRowProps {
@@ -120,36 +122,38 @@ export function LanguageSelectorRow({
                 {openSide === 'source' ? 'เลือกภาษาต้นทาง' : 'เลือกภาษาปลายทาง'}
               </Text>
             </View>
-            <FlatList
-              data={modalOptions}
-              keyExtractor={(item) => item.value}
-              renderItem={({ item }) => (
-                <Pressable
-                  onPress={() => handleModalSelect(item.value)}
-                  style={({ pressed }) => ({ opacity: pressed ? 0.75 : 1 })}
-                >
-                  <View
-                    style={[
-                      styles.modalRow,
-                      currentModalSelection === item.value && styles.modalRowSelected,
-                    ]}
+            <View style={{ height: 120 }}>
+              <FlashList
+                data={modalOptions}
+                keyExtractor={(item) => item.value}
+                renderItem={({ item }) => (
+                  <Pressable
+                    onPress={() => handleModalSelect(item.value)}
+                    style={({ pressed }) => ({ opacity: pressed ? 0.75 : 1 })}
                   >
-                    <Text style={styles.modalFlag}>{item.flag}</Text>
-                    <Text
+                    <View
                       style={[
-                        styles.modalLangLabel,
-                        currentModalSelection === item.value && styles.modalLangLabelSelected,
+                        styles.modalRow,
+                        currentModalSelection === item.value && styles.modalRowSelected,
                       ]}
                     >
-                      {item.label}
-                    </Text>
-                    {currentModalSelection === item.value && (
-                      <Ionicons name="checkmark-circle" size={18} color="#C9A84C" />
-                    )}
-                  </View>
-                </Pressable>
-              )}
-            />
+                      <Text style={styles.modalFlag}>{item.flag}</Text>
+                      <Text
+                        style={[
+                          styles.modalLangLabel,
+                          currentModalSelection === item.value && styles.modalLangLabelSelected,
+                        ]}
+                      >
+                        {item.label}
+                      </Text>
+                      {currentModalSelection === item.value && (
+                        <Ionicons name="checkmark-circle" size={18} color="#C9A84C" />
+                      )}
+                    </View>
+                  </Pressable>
+                )}
+              />
+            </View>
           </View>
         </Pressable>
       </Modal>

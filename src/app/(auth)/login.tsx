@@ -38,8 +38,13 @@ export default function LoginScreen() {
         className="flex-1 px-6 justify-center"
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <Text className="text-3xl font-bold text-brown-900 mb-1">เข้าสู่ระบบ</Text>
-        <Text className="text-sm text-brown-400 mb-8">แอปพจนานุกรมแต้จิ๋ว</Text>
+        <View className="items-center mb-8">
+          <View className="w-20 h-20 bg-brick-100 rounded-full items-center justify-center mb-4 border-2 border-brick-200">
+            <Text className="text-4xl">🏮</Text>
+          </View>
+          <Text className="text-3xl font-bold text-brown-900 mb-1 font-sarabun">เข้าสู่ระบบ</Text>
+          <Text className="text-sm text-brown-400 font-sarabun">Teochew App</Text>
+        </View>
 
         {error && (
           <View className="bg-brick-200 rounded-xl px-4 py-3 mb-4">
@@ -67,6 +72,15 @@ export default function LoginScreen() {
             secureTextEntry
             autoComplete="password"
           />
+          <View className="items-end mt-1">
+            <Pressable
+              onPress={() => {
+                /* TODO: password reset */
+              }}
+            >
+              <Text className="text-sm text-brick-600 font-sarabun">ลืมรหัสผ่าน?</Text>
+            </Pressable>
+          </View>
         </View>
 
         <Pressable

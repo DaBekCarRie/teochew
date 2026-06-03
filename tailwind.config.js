@@ -7,25 +7,25 @@ module.exports = {
     extend: {
       colors: {
         cream: {
-          50: '#FAF6EE',
-          100: '#F5EDD8',
-          200: '#EDE0C4',
-          300: '#D9C9A8',
+          50: 'var(--color-cream-50)',
+          100: 'var(--color-cream-100)',
+          200: 'var(--color-cream-200)',
+          300: 'var(--color-cream-300)',
         },
         gold: {
-          200: '#E8D5A3',
-          500: '#C9A84C',
-          700: '#9A7A2E',
+          200: 'var(--color-gold-200)',
+          500: 'var(--color-gold-500)',
+          700: 'var(--color-gold-700)',
         },
         brick: {
-          200: '#E8C4B8',
-          600: '#B5451B',
-          800: '#7A2E0F',
+          200: 'var(--color-brick-200)',
+          600: 'var(--color-brick-600)',
+          800: 'var(--color-brick-800)',
         },
         brown: {
-          400: '#A08060',
-          600: '#6B4C2A',
-          900: '#2C1A0E',
+          400: 'var(--color-brown-400)',
+          600: 'var(--color-brown-600)',
+          900: 'var(--color-brown-900)',
         },
       },
     },

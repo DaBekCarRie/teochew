@@ -22,7 +22,7 @@ import { SkeletonQuestion } from '../../../components/quiz/SkeletonQuestion';
 
 import { useQuizSession } from '../../../hooks/useQuizSession';
 import { getFlashcardWords } from '../../../services/supabase/words';
-import { fetchLessonWords } from '../../../services/lessons';
+import { fetchLessonWords, fetchWordsByLessonId } from '../../../services/lessons';
 import { useProgressStore } from '../../../stores/progressStore';
 
 export default function QuizScreen() {
@@ -71,6 +71,9 @@ export default function QuizScreen() {
         let filtered;
         if (wordIds && wordIds.length > 0) {
           filtered = await fetchLessonWords(wordIds);
+        } else if (lessonId) {
+          // Only a lessonId was supplied (e.g. deep link) — scope to the lesson.
+          filtered = await fetchWordsByLessonId(lessonId);
         } else {
           filtered = await getFlashcardWords(category ?? null, 50);
         }

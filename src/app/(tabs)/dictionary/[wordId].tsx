@@ -153,7 +153,7 @@ export default function WordDetailScreen() {
           {/* Top row: char + badge */}
           <View className="flex-row items-start justify-between">
             <Text className="text-6xl font-bold text-brown-900" style={{ lineHeight: 76 }}>
-              {word.mandarin_char || word.thai_meaning}
+              {word.mandarin_char || word.teochew_char || word.thai_meaning}
             </Text>
             <View className="flex-row items-center gap-2 mt-2">
               {word.category && (
@@ -165,8 +165,10 @@ export default function WordDetailScreen() {
             </View>
           </View>
 
-          {word.mandarin_pinyin ? (
-            <Text className="text-base italic text-gold-700 mt-1">{word.mandarin_pinyin}</Text>
+          {(word.mandarin_char ? word.mandarin_pinyin : word.teochew_pengim) ? (
+            <Text className="text-base italic text-gold-700 mt-1">
+              {word.mandarin_char ? word.mandarin_pinyin : word.teochew_pengim}
+            </Text>
           ) : null}
 
           <Divider />
@@ -183,15 +185,16 @@ export default function WordDetailScreen() {
             </View>
           </View>
 
-          {/* Mandarin row */}
-          {word.mandarin_char && (
+          {/* Teochew secondary row — shown when the hero is Mandarin and a
+              Teochew reading also exists (avoids duplicating the hero). */}
+          {word.mandarin_char && word.teochew_char && (
             <>
               <Divider />
               <View className="flex-row items-center gap-3">
-                <Text className="text-sm font-semibold text-brown-400">จีนกลาง</Text>
-                <Text className="text-lg font-semibold text-brown-900">{word.mandarin_char}</Text>
-                {word.mandarin_pinyin && (
-                  <Text className="text-sm italic text-brown-400">{word.mandarin_pinyin}</Text>
+                <Text className="text-sm font-semibold text-brown-400">แต้จิ๋ว</Text>
+                <Text className="text-lg font-semibold text-brown-900">{word.teochew_char}</Text>
+                {word.teochew_pengim && (
+                  <Text className="text-sm italic text-brown-400">{word.teochew_pengim}</Text>
                 )}
               </View>
             </>

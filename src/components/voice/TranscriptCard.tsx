@@ -19,9 +19,9 @@ export function TranscriptCard({ transcript, confidence }: TranscriptCardProps) 
         marginTop: 16,
         marginBottom: 12,
       }}
-      accessibilityLabel={`Whisper เงียม ${transcript || '—'} ความมั่นใจ ${confidence >= 0.8 ? 'สูง' : confidence >= 0.5 ? 'กลาง' : 'ต่ำ'}`}
+      accessibilityLabel={`คำที่ถอดได้ ${transcript || '—'} ความมั่นใจ ${confidence >= 0.8 ? 'สูง' : confidence >= 0.5 ? 'กลาง' : 'ต่ำ'}`}
     >
-      <Text style={{ fontSize: 12, color: '#A08060', marginBottom: 8 }}>Whisper เงียม:</Text>
+      <Text style={{ fontSize: 12, color: '#A08060', marginBottom: 8 }}>คำที่ถอดได้:</Text>
       <Text
         style={{
           fontSize: 32,

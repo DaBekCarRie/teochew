@@ -18,6 +18,7 @@ export default function RegisterScreen() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,6 +26,10 @@ export default function RegisterScreen() {
   async function handleSignUp() {
     setError(null);
     setSuccessMsg(null);
+    if (password !== confirmPassword) {
+      setError('รหัสผ่านและการยืนยันรหัสผ่านไม่ตรงกัน');
+      return;
+    }
     setIsSubmitting(true);
     const { error: authError } = await signUp(email.trim(), password);
     setIsSubmitting(false);
@@ -41,8 +46,13 @@ export default function RegisterScreen() {
         className="flex-1 px-6 justify-center"
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <Text className="text-3xl font-bold text-brown-900 mb-1">สมัครสมาชิก</Text>
-        <Text className="text-sm text-brown-400 mb-8">สร้างบัญชีใหม่</Text>
+        <View className="items-center mb-8">
+          <View className="w-20 h-20 bg-brick-100 rounded-full items-center justify-center mb-4 border-2 border-brick-200">
+            <Text className="text-4xl">🏮</Text>
+          </View>
+          <Text className="text-3xl font-bold text-brown-900 mb-1 font-sarabun">สมัครสมาชิก</Text>
+          <Text className="text-sm text-brown-400 font-sarabun">สร้างบัญชีใหม่</Text>
+        </View>
 
         {error && (
           <View className="bg-brick-200 rounded-xl px-4 py-3 mb-4">
@@ -73,6 +83,15 @@ export default function RegisterScreen() {
             placeholderTextColor="#A08060"
             value={password}
             onChangeText={setPassword}
+            secureTextEntry
+            autoComplete="new-password"
+          />
+          <TextInput
+            className="bg-white border border-cream-300 rounded-xl px-4 py-3 text-base text-brown-900"
+            placeholder="ยืนยันรหัสผ่าน"
+            placeholderTextColor="#A08060"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
             secureTextEntry
             autoComplete="new-password"
           />

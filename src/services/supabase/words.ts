@@ -4,7 +4,11 @@ import type { WordDetail, WordEntry } from '../../types/dictionary';
 const WORD_SELECT =
   'id, teochew_char, teochew_pengim, thai_meaning, english_meaning, mandarin_char, mandarin_pinyin, category, verified, teochew_audio';
 
-export async function searchWords(query: string, category?: string | null): Promise<WordEntry[]> {
+export async function searchWords(
+  query: string,
+  category?: string | null,
+  signal?: AbortSignal,
+): Promise<WordEntry[]> {
   const pattern = `%${query}%`;
 
   let q = supabase
@@ -22,7 +26,9 @@ export async function searchWords(query: string, category?: string | null): Prom
 
   if (category) q = q.eq('category', category);
 
-  const { data, error } = await q.limit(50);
+  const queryBuilder = q.limit(50);
+  if (signal) queryBuilder.abortSignal(signal);
+  const { data, error } = await queryBuilder;
   if (error) throw error;
   return (data as WordEntry[]) ?? [];
 }

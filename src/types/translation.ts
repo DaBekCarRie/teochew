@@ -1,4 +1,4 @@
-export type Lang = 'th' | 'zh' | 'en';
+export type Lang = 'th' | 'zh' | 'en' | 'tc';
 
 export type TranslationScreenState = 'idle' | 'loading' | 'success' | 'error';
 

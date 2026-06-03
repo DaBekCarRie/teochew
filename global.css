@@ -1,3 +1,49 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --color-cream-50: #FAF6EE;
+    --color-cream-100: #F5EDD8;
+    --color-cream-200: #EDE0C4;
+    --color-cream-300: #D9C9A8;
+    
+    --color-gold-200: #E8D5A3;
+    --color-gold-500: #C9A84C;
+    --color-gold-700: #9A7A2E;
+
+    --color-brick-200: #E8C4B8;
+    --color-brick-600: #B5451B;
+    --color-brick-800: #7A2E0F;
+
+    --color-brown-400: #A08060;
+    --color-brown-600: #6B4C2A;
+    --color-brown-900: #2C1A0E;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      /* Backgrounds (Cream -> Dark Browns/Blacks) */
+      --color-cream-50: #1A1008;
+      --color-cream-100: #2A1A0C;
+      --color-cream-200: #3A2518;
+      --color-cream-300: #4A3020;
+      
+      /* Gold */
+      --color-gold-200: #9A7A2E; 
+      --color-gold-500: #C9A84C; 
+      --color-gold-700: #E8D5A3; 
+
+      /* Brick */
+      --color-brick-200: #7A2E0F;
+      --color-brick-600: #D4613A; 
+      --color-brick-800: #E8C4B8; 
+
+      /* Text (Browns -> Light Creams) */
+      --color-brown-400: #A08060; 
+      --color-brown-600: #D9C9A8;
+      --color-brown-900: #F5EDD8; 
+    }
+  }
+}

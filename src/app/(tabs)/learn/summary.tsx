@@ -158,7 +158,7 @@ export default function SummaryScreen() {
 
         {/* CTA section */}
         <View style={styles.ctaSection}>
-          {unknownCount === 0 ? (
+          {total > 0 && unknownCount === 0 ? (
             <View style={styles.perfectBadge}>
               <Ionicons name="star" size={16} color="#4A7C59" />
               <Text style={styles.perfectText}>ยอดเยี่ยม! คุณจำได้ทุกคำ</Text>

@@ -116,7 +116,7 @@ export default function TranslationScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#F5EDD8' }}>
+    <SafeAreaView className="flex-1 bg-cream-100">
       <TranslationHeader onHistoryPress={() => router.push('/translate/history')} />
 
       <ScrollView
@@ -126,24 +126,7 @@ export default function TranslationScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Input card */}
-        <View
-          style={{
-            marginHorizontal: 16,
-            marginTop: 16,
-            backgroundColor: '#FAF6EE',
-            borderRadius: 20,
-            borderWidth: 1,
-            borderColor: '#E5D8BE',
-            paddingHorizontal: 16,
-            paddingTop: 4,
-            paddingBottom: 16,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.06,
-            shadowRadius: 8,
-            elevation: 2,
-          }}
-        >
+        <View className="mx-4 mt-4 bg-cream-50 rounded-[20px] border border-cream-200 px-4 pt-1 pb-4 shadow-sm elevation-2">
           <LanguageSelectorRow
             sourceLang={sourceLang}
             targetLang={targetLang}

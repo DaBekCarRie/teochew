@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, Text, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useCultureStore } from '../../../stores/cultureStore';
 import { WordOfDayCard } from '../../../components/culture/WordOfDayCard';
@@ -23,6 +24,7 @@ const FILTER_TABS: { key: FilterKey; label: string }[] = [
 ];
 
 export default function CultureScreen() {
+  const router = useRouter();
   const { hydrate, wordOfDay, phraseOfDay, articles, scheduleDailyNotification } =
     useCultureStore();
   const { notifEnabled, notifTime } = useUserStore();
@@ -57,15 +59,19 @@ export default function CultureScreen() {
   }, [permissionRequested, notifEnabled, notifTime, scheduleDailyNotification]);
 
   return (
-    <SafeAreaView style={styles.screen}>
+    <SafeAreaView className="flex-1 bg-cream-50">
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View>
-            <Text style={styles.headerTitle}>วัฒนธรรมแต้จิ๋ว</Text>
-            <Text style={styles.headerSub}>Teochew Culture</Text>
+            <Text className="text-[22px] font-extrabold text-brown-900 font-sarabun leading-[26px]">
+              วัฒนธรรมแต้จิ๋ว
+            </Text>
+            <Text className="text-[13px] text-brown-400 font-sarabun tracking-[0.5px]">
+              Teochew Culture
+            </Text>
           </View>
-          <Pressable style={({ pressed }) => [styles.searchBtn, { opacity: pressed ? 0.6 : 1 }]}>
+          <Pressable className="w-[38px] h-[38px] rounded-full bg-cream-100 items-center justify-center active:opacity-60">
             <Ionicons name="search" size={20} color="#2C1A0E" />
           </Pressable>
         </View>
@@ -112,6 +118,27 @@ export default function CultureScreen() {
         {wordOfDay && <WordOfDayCard wordOfDay={wordOfDay} />}
         {phraseOfDay && <PhraseOfDayCard phrase={phraseOfDay} />}
 
+        {/* Folktales entry */}
+        <View className="mx-5 mt-4 bg-white rounded-[18px] border border-cream-200 overflow-hidden shadow-sm elevation-2">
+          <Pressable
+            onPress={() => router.push('/culture/folktales')}
+            className="flex-row items-center p-4 active:bg-cream-50"
+          >
+            <View className="w-12 h-12 rounded-xl bg-gold-50 items-center justify-center mr-4 border border-gold-100">
+              <Ionicons name="book" size={24} color="#C9A84C" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-base font-bold text-brown-900 font-sarabun">
+                นิทานและสุภาษิตแต้จิ๋ว
+              </Text>
+              <Text className="text-xs text-brown-400 font-sarabun mt-1">
+                ฟังเสียงเล่าเรื่อง พร้อมคำอ่านและคำแปล
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#D9C9A8" />
+          </Pressable>
+        </View>
+
         {/* Diaspora origin */}
         <DiasporaOriginCard />
 
@@ -124,8 +151,7 @@ export default function CultureScreen() {
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1,
-    backgroundColor: '#FAF6EE',
+    // Replaced by className="flex-1 bg-cream-50"
   },
   header: {
     paddingHorizontal: 20,

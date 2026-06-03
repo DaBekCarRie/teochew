@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, Text, FlatList, Pressable, Alert } from 'react-native';
+import { View, Text, Pressable, Alert } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -98,7 +99,7 @@ export default function HistoryScreen() {
       {history.length === 0 ? (
         <HistoryEmptyState onGoTranslate={() => router.back()} />
       ) : (
-        <FlatList
+        <FlashList
           data={history}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 12 }}

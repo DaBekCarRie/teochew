@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import * as Application from 'expo-application';
+import { submitFeedback } from '../../services/supabase/feedback';
 
 interface FeedbackModalProps {
   visible: boolean;
@@ -50,9 +52,14 @@ export function FeedbackModal({ visible, onClose }: FeedbackModalProps) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setSubmitting(true);
     try {
-      // In prod: POST to Supabase feedback table or API endpoint
-      // payload includes: { rating, category, message, grandparent_status: grandparentStatus }
-      await new Promise((r) => setTimeout(r, 800));
+      await submitFeedback({
+        rating,
+        category,
+        message,
+        grandparent_status: grandparentStatus,
+        app_version: Application.nativeApplicationVersion || '1.0.0',
+        platform: Platform.OS,
+      });
       setSubmitted(true);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setTimeout(handleClose, 2000);

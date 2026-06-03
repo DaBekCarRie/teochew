@@ -50,7 +50,8 @@
           "sounds": [],
           "iosDisplayInForeground": true
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "extra": {
       "router": {

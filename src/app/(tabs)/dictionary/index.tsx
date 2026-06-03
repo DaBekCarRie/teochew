@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, FlatList, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator } from 'react-native';
+import { FlashList, FlashListRef } from '@shopify/flash-list';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -34,7 +35,7 @@ export default function DictionaryScreen() {
   const [browseHasMore, setBrowseHasMore] = useState(false);
   const browseOffsetRef = useRef(0);
   const browseCategory = useRef<string | null>(null); // tracks which category the current list belongs to
-  const flatListRef = useRef<FlatList<WordEntry>>(null);
+  const flatListRef = useRef<FlashListRef<WordEntry>>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   const isConnected = useNetworkStatus();
@@ -201,7 +202,7 @@ export default function DictionaryScreen() {
 
       {/* Results */}
       <View className="flex-1">
-        <FlatList<WordEntry>
+        <FlashList<WordEntry>
           ref={flatListRef}
           data={listData}
           keyExtractor={(item) => item.id}
@@ -225,8 +226,6 @@ export default function DictionaryScreen() {
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
           showsVerticalScrollIndicator={false}
-          maxToRenderPerBatch={10}
-          windowSize={5}
         />
 
         {/* Scroll-to-top FAB */}

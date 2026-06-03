@@ -16,7 +16,7 @@ import { FetchErrorState } from '../../../components/flashcard/FetchErrorState';
 import { useFlashcardDeck } from '../../../hooks/useFlashcardDeck';
 import { useCardFlip } from '../../../hooks/useCardFlip';
 import { useFlashcardGesture } from '../../../hooks/useFlashcardGesture';
-import { fetchLessonWords } from '../../../services/lessons';
+import { fetchLessonWords, fetchWordsByLessonId } from '../../../services/lessons';
 import { useProgressStore } from '../../../stores/progressStore';
 
 export default function FlashcardScreen() {
@@ -113,6 +113,10 @@ export default function FlashcardScreen() {
     if (idStr) {
       const ids = idStr.split(',').filter(Boolean);
       fetchLessonWords(ids).then((words) => loadDeck(null, words));
+    } else if (lessonId) {
+      // Only a lessonId was supplied (e.g. deep link) — resolve its word list
+      // so the deck is scoped to the lesson instead of a random pool.
+      fetchWordsByLessonId(lessonId).then((words) => loadDeck(null, words));
     } else {
       loadDeck(category);
     }

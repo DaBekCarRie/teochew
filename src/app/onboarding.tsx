@@ -71,25 +71,27 @@ export default function OnboardingScreen() {
     }
   }
 
-  const panGesture = Gesture.Pan().onEnd((e) => {
-    if (e.translationX < -50 && currentSlide < TOTAL_SLIDES - 1) {
-      runOnJS(handleNext)();
-    } else if (e.translationX > 50 && currentSlide > 0) {
-      runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
-      // Animate back
-      translateX.value = withTiming(SCREEN_WIDTH, {
-        duration: 300,
-        easing: Easing.out(Easing.cubic),
-      });
-      opacity.value = withTiming(0, { duration: 300 }, () => {
-        runOnJS(setCurrentSlide)(currentSlide - 1);
+  const panGesture = Gesture.Pan()
+    .activeOffsetX([-20, 20])
+    .onEnd((e) => {
+      if (e.translationX < -50 && currentSlide < TOTAL_SLIDES - 1) {
+        runOnJS(handleNext)();
+      } else if (e.translationX > 50 && currentSlide > 0) {
+        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
+        // Animate back
+        translateX.value = withTiming(SCREEN_WIDTH, {
+          duration: 300,
+          easing: Easing.out(Easing.cubic),
+        });
+        opacity.value = withTiming(0, { duration: 300 }, () => {
+          runOnJS(setCurrentSlide)(currentSlide - 1);
 
-        translateX.value = -SCREEN_WIDTH;
-        translateX.value = withTiming(0, { duration: 300, easing: Easing.out(Easing.cubic) });
-        opacity.value = withTiming(1, { duration: 300 });
-      });
-    }
-  });
+          translateX.value = -SCREEN_WIDTH;
+          translateX.value = withTiming(0, { duration: 300, easing: Easing.out(Easing.cubic) });
+          opacity.value = withTiming(1, { duration: 300 });
+        });
+      }
+    });
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
@@ -101,11 +103,27 @@ export default function OnboardingScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FAF6EE' }}>
       {currentSlide < TOTAL_SLIDES - 1 && (
         <Pressable
-          style={{ position: 'absolute', top: 50, right: 20, zIndex: 10, padding: 8 }}
+          style={({ pressed }) => ({
+            position: 'absolute',
+            top: 50,
+            right: 20,
+            zIndex: 10,
+            paddingHorizontal: 14,
+            paddingVertical: 6,
+            backgroundColor: 'rgba(255,255,255,0.7)',
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: '#EDE0C4',
+            opacity: pressed ? 0.7 : 1,
+          })}
           onPress={handleSkip}
           accessibilityLabel="ข้ามการแนะนำ"
         >
-          <Text style={{ fontSize: 14, color: '#A08060', fontFamily: 'Sarabun' }}>ข้าม</Text>
+          <Text
+            style={{ fontSize: 13, fontWeight: '600', color: '#8A6040', fontFamily: 'Sarabun' }}
+          >
+            ข้าม
+          </Text>
         </Pressable>
       )}
 
